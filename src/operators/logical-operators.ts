@@ -10,8 +10,8 @@ import type { Condition } from "./base-types";
  * @see {@link https://docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Logical Operators}
  */
 export const and = (...conditions: Condition[]): Condition => ({
-	type: "and",
-	conditions,
+  type: "and",
+  conditions,
 });
 
 /**
@@ -24,8 +24,8 @@ export const and = (...conditions: Condition[]): Condition => ({
  * @see {@link https://docs.ogc.org/is/21-065r1/21-065r1.html OGC CQL - Logical Operators}
  */
 export const or = (...conditions: Condition[]): Condition => ({
-	type: "or",
-	conditions,
+  type: "or",
+  conditions,
 });
 
 /**
@@ -35,6 +35,6 @@ export const or = (...conditions: Condition[]): Condition => ({
  * @see {@link https://docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Logical Operators}
  */
 export const not = (condition: Condition): Condition => ({
-	type: "not",
-	condition,
+  type: "not",
+  condition,
 });

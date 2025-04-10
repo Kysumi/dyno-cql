@@ -1,5 +1,11 @@
 import type { Condition } from "./operators/base-types";
+import type { Geometry } from "geojson";
 import jsts from "jsts";
+import {
+  InvalidConditionError,
+  UnsupportedConditionTypeError,
+  SpatialOperationError,
+} from "./errors";
 
 const geoJsonReader = new jsts.io.GeoJSONReader();
 const wktWriter = new jsts.io.WKTWriter();
@@ -129,6 +135,9 @@ export class QueryBuilder<T extends Record<string, unknown>>
    *
    * @param condition The condition to convert
    * @returns The CQL string representation of the condition
+   * @throws InvalidConditionError if the condition is missing required attributes
+   * @throws UnsupportedConditionTypeError if the condition type is not supported
+   * @throws SpatialOperationError if there's an issue with a spatial operation
    */
   private conditionToCQL(condition?: Condition): string {
     if (!condition) {
@@ -140,59 +149,194 @@ export class QueryBuilder<T extends Record<string, unknown>>
         if (condition.geometry) {
           return `EQUALS(${condition.attr}, ${JSON.stringify(condition.geometry)})`;
         }
+        if (!condition.attr) {
+          throw new InvalidConditionError("eq", condition, "attr");
+        }
         return `${condition.attr} = ${this.formatValue(condition.value)}`;
       case "ne":
+        if (!condition.attr) {
+          throw new InvalidConditionError("ne", condition, "attr");
+        }
         return `${condition.attr} <> ${this.formatValue(condition.value)}`;
       case "lt":
+        if (!condition.attr) {
+          throw new InvalidConditionError("lt", condition, "attr");
+        }
         return `${condition.attr} < ${this.formatValue(condition.value)}`;
       case "lte":
+        if (!condition.attr) {
+          throw new InvalidConditionError("lte", condition, "attr");
+        }
         return `${condition.attr} <= ${this.formatValue(condition.value)}`;
       case "gt":
+        if (!condition.attr) {
+          throw new InvalidConditionError("gt", condition, "attr");
+        }
         return `${condition.attr} > ${this.formatValue(condition.value)}`;
       case "gte":
+        if (!condition.attr) {
+          throw new InvalidConditionError("gte", condition, "attr");
+        }
         return `${condition.attr} >= ${this.formatValue(condition.value)}`;
       case "between": {
+        if (!condition.attr) {
+          throw new InvalidConditionError("between", condition, "attr");
+        }
+        if (
+          !condition.value ||
+          !Array.isArray(condition.value) ||
+          condition.value.length !== 2
+        ) {
+          throw new InvalidConditionError(
+            "between",
+            condition,
+            "value (array with 2 elements)",
+          );
+        }
         const [lower, upper] = condition.value as [unknown, unknown];
         return `${condition.attr} BETWEEN ${this.formatValue(lower)} AND ${this.formatValue(upper)}`;
       }
       case "like":
+        if (!condition.attr) {
+          throw new InvalidConditionError("like", condition, "attr");
+        }
         return `${condition.attr} LIKE ${this.formatValue(condition.value)}`;
       case "contains":
         // Handle both text contains and spatial contains based on presence of geometry
         if (condition.geometry) {
-          return `CONTAINS(${condition.attr}, ${JSON.stringify(condition.geometry)})`;
+          if (!condition.attr) {
+            throw new InvalidConditionError(
+              "contains (spatial)",
+              condition,
+              "attr",
+            );
+          }
+          return this.formatSpatialQuery(
+            "CONTAINS",
+            condition.attr,
+            condition.geometry,
+          );
         }
         // Text contains if no geometry provided
+        if (!condition.attr) {
+          throw new InvalidConditionError("contains (text)", condition, "attr");
+        }
+        if (condition.value === undefined) {
+          throw new InvalidConditionError(
+            "contains (text)",
+            condition,
+            "value",
+          );
+        }
         return `${condition.attr} LIKE ${this.formatValue(`%${condition.value}%`)}`;
-      case "intersects": {
-        const geo = geoJsonReader.read(condition.geometry!);
-        const wkt = wktWriter.write(geo);
-        return `INTERSECTS(${condition.attr}, ${wkt})`;
-      }
+      case "intersects":
+        if (!condition.geometry) {
+          throw new InvalidConditionError("intersects", condition, "geometry");
+        }
+        if (!condition.attr) {
+          throw new InvalidConditionError("intersects", condition, "attr");
+        }
+        return this.formatSpatialQuery(
+          "INTERSECTS",
+          condition.attr,
+          condition.geometry,
+        );
       case "disjoint":
-        return `DISJOINT(${condition.attr}, ${JSON.stringify(condition.geometry)})`;
+        if (!condition.geometry) {
+          throw new InvalidConditionError("disjoint", condition, "geometry");
+        }
+        if (!condition.attr) {
+          throw new InvalidConditionError("disjoint", condition, "attr");
+        }
+        return this.formatSpatialQuery(
+          "DISJOINT",
+          condition.attr,
+          condition.geometry,
+        );
       case "within":
-        return `WITHIN(${condition.attr}, ${JSON.stringify(condition.geometry)})`;
+        if (!condition.geometry) {
+          throw new InvalidConditionError("within", condition, "geometry");
+        }
+        if (!condition.attr) {
+          throw new InvalidConditionError("within", condition, "attr");
+        }
+        return this.formatSpatialQuery(
+          "WITHIN",
+          condition.attr,
+          condition.geometry,
+        );
       case "touches":
-        return `TOUCHES(${condition.attr}, ${JSON.stringify(condition.geometry)})`;
+        if (!condition.geometry) {
+          throw new InvalidConditionError("touches", condition, "geometry");
+        }
+        if (!condition.attr) {
+          throw new InvalidConditionError("touches", condition, "attr");
+        }
+        return this.formatSpatialQuery(
+          "TOUCHES",
+          condition.attr,
+          condition.geometry,
+        );
       case "overlaps":
-        return `OVERLAPS(${condition.attr}, ${JSON.stringify(condition.geometry)})`;
+        if (!condition.geometry) {
+          throw new InvalidConditionError("overlaps", condition, "geometry");
+        }
+        if (!condition.attr) {
+          throw new InvalidConditionError("overlaps", condition, "attr");
+        }
+        return this.formatSpatialQuery(
+          "OVERLAPS",
+          condition.attr,
+          condition.geometry,
+        );
       case "crosses":
-        return `CROSSES(${condition.attr}, ${JSON.stringify(condition.geometry)})`;
+        if (!condition.geometry) {
+          throw new InvalidConditionError("crosses", condition, "geometry");
+        }
+        if (!condition.attr) {
+          throw new InvalidConditionError("crosses", condition, "attr");
+        }
+        return this.formatSpatialQuery(
+          "CROSSES",
+          condition.attr,
+          condition.geometry,
+        );
       case "and":
-        return condition.conditions && condition.conditions.length > 0
-          ? `(${condition.conditions.map((c) => this.conditionToCQL(c)).join(" AND ")})`
-          : "";
+        if (
+          !condition.conditions ||
+          !Array.isArray(condition.conditions) ||
+          condition.conditions.length === 0
+        ) {
+          throw new InvalidConditionError(
+            "and",
+            condition,
+            "conditions (non-empty array)",
+          );
+        }
+        return `(${condition.conditions.map((c) => this.conditionToCQL(c)).join(" AND ")})`;
       case "or":
-        return condition.conditions && condition.conditions.length > 0
-          ? `(${condition.conditions.map((c) => this.conditionToCQL(c)).join(" OR ")})`
-          : "";
+        if (
+          !condition.conditions ||
+          !Array.isArray(condition.conditions) ||
+          condition.conditions.length === 0
+        ) {
+          throw new InvalidConditionError(
+            "or",
+            condition,
+            "conditions (non-empty array)",
+          );
+        }
+        return `(${condition.conditions.map((c) => this.conditionToCQL(c)).join(" OR ")})`;
       case "not":
-        return condition.condition
-          ? `NOT (${this.conditionToCQL(condition.condition)})`
-          : "";
+        if (!condition.condition) {
+          throw new InvalidConditionError("not", condition, "condition");
+        }
+        return `NOT (${this.conditionToCQL(condition.condition)})`;
       default:
-        return "";
+        throw new UnsupportedConditionTypeError(
+          (condition as Condition).type || "unknown",
+          condition,
+        );
     }
   }
 
@@ -213,8 +357,36 @@ export class QueryBuilder<T extends Record<string, unknown>>
       return value ? "TRUE" : "FALSE";
     }
     if (value instanceof Date) {
-      return `TIMESTAMP('${value.toISOString()}')}`;
+      return `TIMESTAMP('${value.toISOString()}')}}`;
     }
     return String(value);
+  }
+
+  /**
+   * Helper method to format spatial queries consistently.
+   * Converts GeoJSON to Well-Known Text (WKT) format for CQL.
+   *
+   * @param operator The spatial operator (e.g., "INTERSECTS", "WITHIN")
+   * @param attribute The attribute/field name to apply the operator to
+   * @param geometry The GeoJSON geometry to be converted to WKT
+   * @returns The formatted spatial query string
+   * @throws SpatialOperationError if there's an issue with the spatial operation
+   */
+  private formatSpatialQuery(
+    operator: string,
+    attribute: string,
+    geometry: Geometry,
+  ): string {
+    try {
+      const geo = geoJsonReader.read(geometry);
+      const wkt = wktWriter.write(geo);
+      return `${operator}(${attribute}, ${wkt})`;
+    } catch (error) {
+      throw new SpatialOperationError(
+        operator,
+        geometry,
+        error instanceof Error ? error.message : String(error),
+      );
+    }
   }
 }

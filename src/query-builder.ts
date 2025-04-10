@@ -16,9 +16,12 @@ import {
   gt,
   gte,
   between,
+  isNotNull
+  isNull,
 } from "./operators/comparison-operators";
 import { and, or, not } from "./operators/logical-operators";
-import { contains } from "./operators/text-operators";
+import { contains, like } from "./operators/text-operators";
+import { intersects, disjoint, spatialContains, within } from "./operators/spatial-operators";
 
 // Create instances of JSTS readers and writers
 // @ts-expect-error
@@ -111,6 +114,13 @@ export class QueryBuilder<T extends Record<string, unknown>>
         and,
         or,
         not,
+        intersects,
+        disjoint,
+        isNotNull,
+        isNull,
+        like,
+        spatialContains,
+        within,
       };
       this.options.filter = condition(conditionOperator);
     } else {

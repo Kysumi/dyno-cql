@@ -6,7 +6,7 @@ import type { Condition } from "./base-types";
  */
 const createComparisonCondition =
   (type: "eq" | "ne" | "lt" | "lte" | "gt" | "gte") =>
-  (attr: string, value: string | number | boolean | Date): Condition => ({
+  (attr: string, value: unknown): Condition => ({
     type,
     attr,
     value,

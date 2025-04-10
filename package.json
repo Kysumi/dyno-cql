@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "check-ts": "tsc",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "lint": "biome lint ./src"
   },
   "keywords": ["cql", "query", "ogc", "typescript"],
   "author": "maunderscott@gmail.com",

@@ -384,7 +384,6 @@ export class QueryBuilder<T extends Record<string, unknown>>
     } catch (error) {
       throw new SpatialOperationError(
         operator,
-        geometry,
         error instanceof Error ? error.message : String(error),
       );
     }

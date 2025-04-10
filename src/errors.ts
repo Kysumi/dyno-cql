@@ -72,8 +72,6 @@ export class SpatialOperationError extends CQLError {
   constructor(
     /** The spatial operator that failed */
     public readonly operator: string,
-    /** The condition object that caused the error */
-    public readonly condition: Partial<Condition>,
     /** The specific reason for the failure */
     public readonly reason: string,
   ) {

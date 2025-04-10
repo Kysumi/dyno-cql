@@ -1,4 +1,4 @@
-import type { Condition } from "./operators/base-types";
+import type { Condition, ConditionOperator } from "./operators/base-types";
 import type { Geometry } from "geojson";
 // @ts-ignore - ignore resolution issues with JSTS module
 import GeoJSONReader from "jsts/org/locationtech/jts/io/GeoJSONReader.js";
@@ -8,6 +8,17 @@ import {
   UnsupportedConditionTypeError,
   SpatialOperationError,
 } from "./errors";
+import {
+  eq,
+  ne,
+  lt,
+  lte,
+  gt,
+  gte,
+  between,
+} from "./operators/comparison-operators";
+import { and, or, not } from "./operators/logical-operators";
+import { contains } from "./operators/text-operators";
 
 // Create instances of JSTS readers and writers
 // @ts-expect-error
@@ -84,8 +95,27 @@ export class QueryBuilder<T extends Record<string, unknown>>
    * @param condition The condition to filter by
    * @returns The builder instance for method chaining
    */
-  filter(condition: Condition): QueryBuilder<T> {
-    this.options.filter = condition;
+  filter(
+    condition: Condition | ((op: ConditionOperator<T>) => Condition),
+  ): QueryBuilder<T> {
+    if (typeof condition === "function") {
+      const conditionOperator: ConditionOperator<T> = {
+        eq,
+        ne,
+        lt,
+        lte,
+        gt,
+        gte,
+        between,
+        contains,
+        and,
+        or,
+        not,
+      };
+      this.options.filter = condition(conditionOperator);
+    } else {
+      this.options.filter = condition;
+    }
     return this;
   }
 

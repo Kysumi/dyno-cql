@@ -10,6 +10,20 @@ type IsEqual<T1, T2> = T1 extends T2
     : false
   : false;
 
+// @ts-expect-error
+interface File extends Blob {
+  readonly lastModified: number;
+  readonly name: string;
+}
+
+interface FileList {
+  readonly length: number;
+  item(index: number): File | null;
+  [index: number]: File;
+}
+
+type BrowserNativeObject = Date | FileList | File;
+
 // biome-ignore lint/suspicious/noExplicitAny: RHF
 type IsTuple<T extends ReadonlyArray<any>> = number extends T["length"]
   ? false
@@ -26,7 +40,7 @@ type AnyIsEqual<T1, T2> = T1 extends T2
 
 type PathImpl<K extends string | number, V, TraversedTypes> = V extends
   | Primitive
-  | Date
+  | BrowserNativeObject
   ? `${K}`
   : true extends AnyIsEqual<TraversedTypes, V>
     ? `${K}`

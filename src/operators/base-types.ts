@@ -1,4 +1,4 @@
-import { Geometry } from "geojson";
+import type { Geometry } from "geojson";
 
 /**
  * Type definition for path types (simplifying the type system since we don't have access to Path and PathType)

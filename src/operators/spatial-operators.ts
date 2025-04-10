@@ -1,4 +1,5 @@
-import type { Condition, Geometry } from "./base-types";
+import type { Geometry } from "geojson";
+import type { Condition } from "./base-types";
 
 /**
  * Creates a spatial INTERSECTS condition

@@ -18,8 +18,8 @@ import {
   spatialContains,
   within,
 } from "../operators/spatial-operators";
-import type { Geometry } from "../operators/base-types";
 import { QueryBuilder } from "../query-builder";
+import { Geometry } from "geojson";
 
 describe("QueryBuilder", () => {
   describe("filter method", () => {

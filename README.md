@@ -3,7 +3,7 @@
 A TypeScript library for building OGC Common Query Language (CQL) filter expressions with a fluent, type-safe API.
 
 [![npm version](https://img.shields.io/npm/v/dyno-cql.svg)](https://www.npmjs.com/package/dyno-cql)
-[![license](https://img.shields.io/npm/l/dyno-cql.svg)](https://github.com/yourusername/dyno-cql/blob/main/LICENSE)
+[![license](https://img.shields.io/npm/l/dyno-cql.svg)](https://github.com/Kysumi/dyno-cql/blob/main/LICENSE)
 
 ## Overview
 

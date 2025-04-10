@@ -1,10 +1,5 @@
 import type { Geometry } from "geojson";
-
-/**
- * Type definition for path types (simplifying the type system since we don't have access to Path and PathType)
- */
-export type Path<T> = string & keyof T;
-export type PathType<T, K extends keyof T> = T[K];
+import type { Path, PathType } from "./path-type";
 
 /**
  * Supported comparison operators for OGC CQL conditions.

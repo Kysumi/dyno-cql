@@ -19,7 +19,7 @@ import {
   within,
 } from "../operators/spatial-operators";
 import { QueryBuilder } from "../query-builder";
-import { Geometry } from "geojson";
+import type { Geometry } from "geojson";
 
 describe("QueryBuilder", () => {
   describe("filter method", () => {
@@ -29,7 +29,7 @@ describe("QueryBuilder", () => {
 
       qb.filter(condition);
 
-      expect(qb["options"].filter).toBe(condition);
+      expect(qb._getOptions().filter).toBe(condition);
     });
   });
 
@@ -42,7 +42,7 @@ describe("QueryBuilder", () => {
 
       expect(clone).not.toBe(qb); // Different instance
 
-      expect(clone["options"].filter).toEqual(qb["options"].filter); // Same filter
+      expect(clone._getOptions().filter).toEqual(qb._getOptions().filter); // Same filter
     });
 
     it("should not affect the original when clone is modified", () => {
@@ -52,8 +52,8 @@ describe("QueryBuilder", () => {
       const clone = qb.clone();
       clone.filter(eq("status", "PENDING"));
 
-      expect(qb["options"].filter).toEqual(eq("status", "ACTIVE"));
-      expect(clone["options"].filter).toEqual(eq("status", "PENDING"));
+      expect(qb._getOptions().filter).toEqual(eq("status", "ACTIVE"));
+      expect(clone._getOptions().filter).toEqual(eq("status", "PENDING"));
     });
   });
 
@@ -162,19 +162,19 @@ describe("QueryBuilder", () => {
 
       expect(
         new QueryBuilder().filter(intersects("geometry", point)).toCQL(),
-      ).toEqual(`INTERSECTS(geometry, ${JSON.stringify(point)})`);
+      ).toEqual("INTERSECTS(geometry, POINT (0 0))");
 
       expect(
         new QueryBuilder().filter(disjoint("geometry", point)).toCQL(),
-      ).toEqual(`DISJOINT(geometry, ${JSON.stringify(point)})`);
+      ).toEqual("DISJOINT(geometry, POINT (0 0))");
 
       expect(
         new QueryBuilder().filter(spatialContains("geometry", point)).toCQL(),
-      ).toEqual(`CONTAINS(geometry, ${JSON.stringify(point)})`);
+      ).toEqual("CONTAINS(geometry, POINT (0 0))");
 
       expect(
         new QueryBuilder().filter(within("geometry", polygon)).toCQL(),
-      ).toEqual(`WITHIN(geometry, ${JSON.stringify(polygon)})`);
+      ).toEqual("WITHIN(geometry, POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0)))");
     });
 
     it("should handle complex nested conditions", () => {

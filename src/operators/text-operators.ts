@@ -5,7 +5,7 @@ import type { Condition } from "./base-types";
  * @internal
  */
 const createTextCondition =
-  (type: "like" | "beginsWith" | "contains") =>
+  (type: "like" | "contains") =>
   (attr: string, value: unknown): Condition => ({
     type,
     attr,
@@ -19,14 +19,6 @@ const createTextCondition =
  * @see {@link https://docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Text Operators}
  */
 export const like = createTextCondition("like");
-
-/**
- * Creates a condition that checks if a string attribute starts with a substring
- * @example
- * beginsWith("email", "info") // email LIKE 'info%'
- * @see {@link https://docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Text Operators}
- */
-export const beginsWith = createTextCondition("beginsWith");
 
 /**
  * Creates a condition that checks if a string contains a substring

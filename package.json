@@ -4,9 +4,7 @@
   "description": "A TypeScript library for building CQL queries",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "build": "tsup",
     "test": "vitest run",
@@ -14,12 +12,7 @@
     "check-ts": "tsc",
     "prepublishOnly": "npm run build"
   },
-  "keywords": [
-    "cql",
-    "query",
-    "ogc",
-    "typescript"
-  ],
+  "keywords": ["cql", "query", "ogc", "typescript"],
   "author": "maunderscott@gmail.com",
   "license": "MIT",
   "devDependencies": {
@@ -30,7 +23,6 @@
   },
   "dependencies": {
     "@types/geojson": "^7946.0.16",
-    "@types/jsts": "^0.17.24",
     "jsts": "^2.12.1"
   }
 }

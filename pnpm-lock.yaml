@@ -11,9 +11,6 @@ importers:
       '@types/geojson':
         specifier: ^7946.0.16
         version: 7946.0.16
-      '@types/jsts':
-        specifier: ^0.17.24
-        version: 0.17.24
       jsts:
         specifier: ^2.12.1
         version: 2.12.1
@@ -521,14 +518,8 @@ packages:
   '@types/geojson@7946.0.16':
     resolution: {integrity: sha512-6C8nqWur3j98U6+lXDfTUWIfgvZU+EumvpHKcYjujKH7woYyLj2sUmff0tRhrqM7BohUw7Pz3ZB1jj2gW9Fvmg==}
 
-  '@types/jsts@0.17.24':
-    resolution: {integrity: sha512-zZAAiAh7SjXCo5lYCMquz/klQVS9LVdSkAVXPk2BP/2l7FHqmfAFTj9PEld9zUFzXC/bgr04yiEDbDKDSaX7Hg==}
-
   '@types/node@22.14.0':
     resolution: {integrity: sha512-Kmpl+z84ILoG+3T/zQFyAJsU6EPTmOCj8/2+83fSN6djd6I4o7uOuGIH6vq3PrjY5BGitSbFuMN18j3iknubbA==}
-
-  '@types/openlayers@4.6.23':
-    resolution: {integrity: sha512-7jCPIa4D4LV03Rttae1AEqvkIN0+nc6Snz4IgA/IjsJD5O3ONxpscqIOdp1qAGuAsikR/ZC9vrPF9np8JRc6ig==}
 
   '@vitest/expect@0.34.6':
     resolution: {integrity: sha512-QUzKpUQRc1qC7qdGo7rMK3AkETI7w18gTCUrsNnyjjJKYiuUB9+TQK3QnR1unhCnWRC0AbKv2omLGQDF/mIjOw==}
@@ -1350,15 +1341,9 @@ snapshots:
 
   '@types/geojson@7946.0.16': {}
 
-  '@types/jsts@0.17.24':
-    dependencies:
-      '@types/openlayers': 4.6.23
-
   '@types/node@22.14.0':
     dependencies:
       undici-types: 6.21.0
-
-  '@types/openlayers@4.6.23': {}
 
   '@vitest/expect@0.34.6':
     dependencies:

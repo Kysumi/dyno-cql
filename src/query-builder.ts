@@ -1,14 +1,19 @@
 import type { Condition } from "./operators/base-types";
 import type { Geometry } from "geojson";
-import jsts from "jsts";
+// @ts-ignore - ignore resolution issues with JSTS module
+import GeoJSONReader from "jsts/org/locationtech/jts/io/GeoJSONReader.js";
+import WKTWriter from "jsts/org/locationtech/jts/io/WKTWriter.js";
 import {
   InvalidConditionError,
   UnsupportedConditionTypeError,
   SpatialOperationError,
 } from "./errors";
 
-const geoJsonReader = new jsts.io.GeoJSONReader();
-const wktWriter = new jsts.io.WKTWriter();
+// Create instances of JSTS readers and writers
+// @ts-expect-error
+const geoJsonReader = new GeoJSONReader();
+// @ts-expect-error
+const wktWriter = new WKTWriter();
 
 /**
  * Interface for QueryBuilder implementation
@@ -41,7 +46,7 @@ export interface QueryOptions {
  *
  * // Complex query with filtering
  * const result = await new QueryBuilder()
- *   .filter(and(eq('status', 'ACTIVE'), beginsWith('name', 'John')))
+ *   .filter(and(eq('status', 'ACTIVE'), like('name', 'John')))
  *   .toCQL();
  * ```
  *
@@ -53,6 +58,11 @@ export class QueryBuilder<T extends Record<string, unknown>>
   protected options: QueryOptions = {};
   protected selectedFields: Set<string> = new Set();
   protected executor: unknown;
+
+  // Helper for testing
+  _getOptions(): QueryOptions {
+    return this.options;
+  }
 
   constructor(executor?: unknown) {
     this.executor = executor;

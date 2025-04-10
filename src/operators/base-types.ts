@@ -42,7 +42,7 @@ export type SpatialOperator =
  * Text operators for string manipulation and comparison.
  * @see {@link https://docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Text Operator Reference}
  */
-export type TextOperator = "like" | "beginsWith" | "contains";
+export type TextOperator = "like" | "contains";
 
 /**
  * Represents an OGC CQL condition expression.

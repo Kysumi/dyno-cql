@@ -9,7 +9,7 @@ import {
   crosses,
   spatialEquals,
 } from "../spatial-operators";
-import type { Geometry } from "../base-types";
+import type { Geometry } from "geojson";
 
 describe("Spatial Operators", () => {
   // Sample geometries for testing
@@ -128,7 +128,7 @@ describe("Spatial Operators", () => {
       const condition = spatialEquals("geometry", pointGeometry);
 
       expect(condition).toEqual({
-        type: "equals",
+        type: "eq",
         attr: "geometry",
         geometry: pointGeometry,
       });

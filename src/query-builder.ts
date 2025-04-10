@@ -16,12 +16,17 @@ import {
   gt,
   gte,
   between,
-  isNotNull
+  isNotNull,
   isNull,
 } from "./operators/comparison-operators";
 import { and, or, not } from "./operators/logical-operators";
 import { contains, like } from "./operators/text-operators";
-import { intersects, disjoint, spatialContains, within } from "./operators/spatial-operators";
+import {
+  intersects,
+  disjoint,
+  spatialContains,
+  within,
+} from "./operators/spatial-operators";
 
 // Create instances of JSTS readers and writers
 // @ts-expect-error

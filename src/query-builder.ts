@@ -367,7 +367,7 @@ export class QueryBuilder<T extends Record<string, unknown>>
       return value ? "TRUE" : "FALSE";
     }
     if (value instanceof Date) {
-      return `TIMESTAMP('${value.toISOString()}')}}`;
+      return `TIMESTAMP('${value.toISOString()}')`;
     }
     return String(value);
   }

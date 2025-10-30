@@ -5,10 +5,6 @@ A TypeScript library for building OGC Common Query Language (CQL) filter express
 [![npm version](https://img.shields.io/npm/v/dyno-cql.svg?style=flat-square)](https://www.npmjs.com/package/dyno-cql)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
-## Overview
-
-Dyno CQL provides a simple and intuitive way to construct CQL filter expressions for querying geospatial and other data sources. It supports a wide range of operators including comparison, logical, text, and spatial operations, all with proper TypeScript typing.
-
 ## Features
 
 - 🔒 **Type-safe API** with full TypeScript support

@@ -34,8 +34,7 @@ yarn add dyno-cql
 ## Basic Usage
 
 ```typescript
-import { QueryBuilder } from 'dyno-cql';
-import { eq, gt, and, contains } from 'dyno-cql/operators';
+import { QueryBuilder, eq, gt, and, contains } from 'dyno-cql';
 
 // Simple filter
 const query = new QueryBuilder()
@@ -64,7 +63,7 @@ const complexQuery = new QueryBuilder()
 import {
   eq, ne, lt, lte, gt, gte,
   between, isNull, isNotNull
-} from 'dyno-cql/operators';
+} from 'dyno-cql';
 
 eq("status", "ACTIVE");       // status = 'ACTIVE'
 ne("status", "DELETED");      // status <> 'DELETED'
@@ -80,7 +79,7 @@ isNotNull("email");          // email <> NULL
 ### Text Operators
 
 ```typescript
-import { like, contains } from 'dyno-cql/operators';
+import { like, contains } from 'dyno-cql';
 
 like("name", "A");           // name LIKE 'A%'
 contains("description", "important");  // description LIKE '%important%'
@@ -89,8 +88,7 @@ contains("description", "important");  // description LIKE '%important%'
 ### Logical Operators
 
 ```typescript
-import { and, or, not } from 'dyno-cql/operators';
-import { eq, gt } from 'dyno-cql/operators';
+import { and, or, not, eq, gt } from 'dyno-cql';
 
 and(
   eq("status", "ACTIVE"),
@@ -113,7 +111,7 @@ Spatial operators use GeoJSON for input but convert to Well-Known Text (WKT) for
 import {
   intersects, disjoint, spatialContains, within,
   touches, overlaps, crosses, spatialEquals
-} from 'dyno-cql/operators';
+} from 'dyno-cql';
 
 // GeoJSON Point
 const point = {
@@ -150,8 +148,7 @@ spatialEquals("geometry", point);    // EQUALS(geometry, POINT(0 0))
 You can generate URL-safe CQL strings for use in URL parameters:
 
 ```typescript
-import { QueryBuilder } from 'dyno-cql';
-import { eq, contains, and } from 'dyno-cql/operators';
+import { QueryBuilder, eq, contains, and } from 'dyno-cql';
 
 const query = new QueryBuilder()
   .filter(
@@ -170,8 +167,7 @@ const urlSafeCQL = query.toCQLUrlSafe();
 You can create a base query and then clone it to make variations:
 
 ```typescript
-import { QueryBuilder } from 'dyno-cql';
-import { eq, and } from 'dyno-cql/operators';
+import { QueryBuilder, eq, and } from 'dyno-cql';
 
 // Create a base query
 const baseQuery = new QueryBuilder()
@@ -187,7 +183,7 @@ const activeProductsQuery = baseQuery.clone()
 The library provides specific error types for different scenarios:
 
 ```typescript
-import { CQLError, InvalidConditionError, UnsupportedConditionTypeError } from 'dyno-cql/errors';
+import { QueryBuilder, eq, CQLError, InvalidConditionError, UnsupportedConditionTypeError } from 'dyno-cql';
 
 try {
   // Your code that might throw CQL errors

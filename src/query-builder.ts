@@ -82,8 +82,6 @@ export class QueryBuilder<T extends Record<string, unknown>>
     return this.options;
   }
 
-  constructor() {}
-
   /**
    * Sets the filter condition for the query.
    * This method allows you to specify complex filter criteria using the condition helpers.

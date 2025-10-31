@@ -46,16 +46,22 @@ yarn add dyno-cql
 ## Basic Usage
 
 ```typescript
-import { QueryBuilder, eq, gt, and, contains } from 'dyno-cql';
+import { QueryBuilder, queryBuilder, eq, gt, and, contains } from 'dyno-cql';
 
-// Simple filter
+// Using the QueryBuilder class
 const query = new QueryBuilder()
   .filter(eq("status", "ACTIVE"))
   .toCQL();
 // Result: "status = 'ACTIVE'"
 
-// Complex filter
-const complexQuery = new QueryBuilder()
+// Using the queryBuilder factory function (no 'new' keyword needed)
+const query2 = queryBuilder()
+  .filter(eq("status", "ACTIVE"))
+  .toCQL();
+// Result: "status = 'ACTIVE'"
+
+// Complex filter with method chaining
+const complexQuery = queryBuilder()
   .filter(
     and(
       eq("status", "ACTIVE"),
@@ -66,6 +72,8 @@ const complexQuery = new QueryBuilder()
   .toCQL();
 // Result: "(status = 'ACTIVE' AND age > 18 AND description LIKE '%important%')"
 ```
+
+> **Tip:** The `queryBuilder()` factory function provides a more convenient API without requiring the `new` keyword. Both approaches are functionally equivalent.
 
 ## Operator Types
 

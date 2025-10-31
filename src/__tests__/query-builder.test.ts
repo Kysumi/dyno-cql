@@ -213,13 +213,6 @@ describe("QueryBuilder", () => {
       expect(cql).toEqual("(status = 'ACTIVE' AND age > 18)");
     });
 
-    it("should accept an executor parameter", () => {
-      const mockExecutor = { execute: () => {} };
-      const qb = queryBuilder(mockExecutor);
-
-      expect(qb).toBeInstanceOf(QueryBuilder);
-    });
-
     it("should work the same as using new QueryBuilder()", () => {
       const condition = and(eq("status", "ACTIVE"), like("name", "John%"));
 

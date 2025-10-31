@@ -76,16 +76,13 @@ export class QueryBuilder<T extends Record<string, unknown>>
 {
   protected options: QueryOptions = {};
   protected selectedFields: Set<string> = new Set();
-  protected executor: unknown;
 
   // Helper for testing
   _getOptions(): QueryOptions {
     return this.options;
   }
 
-  constructor(executor?: unknown) {
-    this.executor = executor;
-  }
+  constructor() {}
 
   /**
    * Sets the filter condition for the query.
@@ -151,7 +148,7 @@ export class QueryBuilder<T extends Record<string, unknown>>
    * @returns A new QueryBuilder instance with the same configuration
    */
   clone(): QueryBuilder<T> {
-    const clone = new QueryBuilder<T>(this.executor);
+    const clone = new QueryBuilder<T>();
     clone.options = { ...this.options };
     clone.selectedFields = new Set(this.selectedFields);
     return clone;
@@ -456,18 +453,17 @@ export class QueryBuilder<T extends Record<string, unknown>>
  *   .filter(eq('status', 'ACTIVE'))
  *   .toCQL();
  *
- * // With executor
- * const query = queryBuilder(customExecutor)
- *   .filter(eq('userId', '123'))
+ * // Complex queries with method chaining
+ * const query = queryBuilder()
+ *   .filter(and(eq('status', 'ACTIVE'), gt('age', 18)))
  *   .toCQL();
  * ```
  *
  * @typeParam T - The type of items being queried (defaults to generic Record)
- * @param executor Optional executor for the query builder
  * @returns A new QueryBuilder instance
  */
 export function queryBuilder<
   T extends Record<string, unknown> = Record<string, unknown>,
->(executor?: unknown): QueryBuilder<T> {
-  return new QueryBuilder<T>(executor);
+>(): QueryBuilder<T> {
+  return new QueryBuilder<T>();
 }

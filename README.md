@@ -16,6 +16,7 @@ A TypeScript library for building OGC Common Query Language (CQL) filter express
   - [Logical Operators](#logical-operators)
   - [Spatial Operators](#spatial-operators)
 - [URL-Safe CQL Strings](#url-safe-cql-strings)
+- [Reusable & Prebuilt Conditions](#reusable--prebuilt-conditions)
 - [Cloning Queries](#cloning-queries)
 - [Error Handling](#error-handling)
 - [License](#license)
@@ -173,6 +174,41 @@ const urlSafeCQL = query.toCQLUrlSafe();
 // Automatically URL-encoded for safe use in URL parameters
 ```
 
+## Reusable & Prebuilt Conditions
+
+You can create conditions separately and reuse them across multiple queries:
+
+```typescript
+import { QueryBuilder, eq, and, gt, ne } from 'dyno-cql';
+
+// Create prebuilt conditions
+const activeCondition = eq("status", "ACTIVE");
+const adultCondition = gt("age", 18);
+const notDeletedCondition = ne("deleted", true);
+
+// Use in a single query
+const query = new QueryBuilder()
+  .filter(and(activeCondition, adultCondition))
+  .toCQL();
+
+// Reuse conditions in different queries
+const standardFilters = and(activeCondition, notDeletedCondition);
+
+const query1 = new QueryBuilder()
+  .filter(standardFilters)
+  .toCQL();
+
+const query2 = new QueryBuilder()
+  .filter(and(standardFilters, eq("type", "premium")))
+  .toCQL();
+```
+
+This approach is useful for:
+- **Sharing common filters** across multiple queries
+- **Building dynamic queries** by composing conditions conditionally
+- **Testing and debugging** specific conditions in isolation
+- **Maintaining consistency** in filter logic across your application
+
 ## Cloning Queries
 
 You can create a base query and then clone it to make variations:
@@ -186,7 +222,7 @@ const baseQuery = new QueryBuilder()
 
 // Clone for active products
 const activeProductsQuery = baseQuery.clone()
-  .filter(and(baseQuery.getFilter(), eq("status", "ACTIVE")));
+  .filter(and(eq("type", "product"), eq("status", "ACTIVE")));
 ```
 
 ## Error Handling

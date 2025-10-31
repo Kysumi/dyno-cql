@@ -1,32 +1,32 @@
-import type { Condition, ConditionOperator } from "./operators/base-types";
 import type { Geometry } from "geojson";
 // @ts-ignore - ignore resolution issues with JSTS module
 import GeoJSONReader from "jsts/org/locationtech/jts/io/GeoJSONReader.js";
 import WKTWriter from "jsts/org/locationtech/jts/io/WKTWriter.js";
 import {
   InvalidConditionError,
-  UnsupportedConditionTypeError,
   SpatialOperationError,
+  UnsupportedConditionTypeError,
 } from "./errors";
+import type { Condition, ConditionOperator } from "./operators/base-types";
 import {
+  between,
   eq,
-  ne,
-  lt,
-  lte,
   gt,
   gte,
-  between,
   isNotNull,
   isNull,
+  lt,
+  lte,
+  ne,
 } from "./operators/comparison-operators";
-import { and, or, not } from "./operators/logical-operators";
-import { contains, like } from "./operators/text-operators";
+import { and, not, or } from "./operators/logical-operators";
 import {
-  intersects,
   disjoint,
+  intersects,
   spatialContains,
   within,
 } from "./operators/spatial-operators";
+import { contains, like } from "./operators/text-operators";
 
 // Create instances of JSTS readers and writers
 // @ts-expect-error
@@ -443,4 +443,31 @@ export class QueryBuilder<T extends Record<string, unknown>>
       );
     }
   }
+}
+
+/**
+ * Factory function that creates a new QueryBuilder instance without requiring the `new` keyword.
+ * This provides a more convenient and fluent API for creating queries.
+ *
+ * @example
+ * ```typescript
+ * // Without new keyword
+ * const query = queryBuilder()
+ *   .filter(eq('status', 'ACTIVE'))
+ *   .toCQL();
+ *
+ * // With executor
+ * const query = queryBuilder(customExecutor)
+ *   .filter(eq('userId', '123'))
+ *   .toCQL();
+ * ```
+ *
+ * @typeParam T - The type of items being queried (defaults to generic Record)
+ * @param executor Optional executor for the query builder
+ * @returns A new QueryBuilder instance
+ */
+export function queryBuilder<
+  T extends Record<string, unknown> = Record<string, unknown>,
+>(executor?: unknown): QueryBuilder<T> {
+  return new QueryBuilder<T>(executor);
 }

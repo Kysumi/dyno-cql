@@ -1,5 +1,6 @@
 // Query Builder
 export * from "./query-builder";
+export { queryBuilder } from "./query-builder";
 
 // Operators
 export * from "./operators/comparison-operators";

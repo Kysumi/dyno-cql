@@ -1,25 +1,25 @@
-import { describe, it, expect } from "vitest";
+import type { Geometry } from "geojson";
+import { describe, expect, it } from "vitest";
 import {
+  between,
   eq,
-  ne,
-  lt,
-  lte,
   gt,
   gte,
-  between,
-  isNull,
   isNotNull,
+  isNull,
+  lt,
+  lte,
+  ne,
 } from "../operators/comparison-operators";
-import { like, contains } from "../operators/text-operators";
-import { and, or, not } from "../operators/logical-operators";
+import { and, not, or } from "../operators/logical-operators";
 import {
-  intersects,
   disjoint,
+  intersects,
   spatialContains,
   within,
 } from "../operators/spatial-operators";
-import { QueryBuilder } from "../query-builder";
-import type { Geometry } from "geojson";
+import { contains, like } from "../operators/text-operators";
+import { QueryBuilder, queryBuilder } from "../query-builder";
 
 describe("QueryBuilder", () => {
   describe("filter method", () => {
@@ -190,6 +190,53 @@ describe("QueryBuilder", () => {
       expect(cql).toContain("(status = 'PENDING' OR status = 'PROCESSING')");
       expect(cql).toContain("NOT (deleted = TRUE)");
       expect(cql).toContain("createdAt > TIMESTAMP('");
+    });
+  });
+
+  describe("queryBuilder factory function", () => {
+    it("should create a QueryBuilder instance without new keyword", () => {
+      const qb = queryBuilder();
+      expect(qb).toBeInstanceOf(QueryBuilder);
+    });
+
+    it("should create a functional QueryBuilder that can build queries", () => {
+      const cql = queryBuilder().filter(eq("status", "ACTIVE")).toCQL();
+
+      expect(cql).toEqual("status = 'ACTIVE'");
+    });
+
+    it("should support method chaining", () => {
+      const cql = queryBuilder()
+        .filter(and(eq("status", "ACTIVE"), gt("age", 18)))
+        .toCQL();
+
+      expect(cql).toEqual("(status = 'ACTIVE' AND age > 18)");
+    });
+
+    it("should accept an executor parameter", () => {
+      const mockExecutor = { execute: () => {} };
+      const qb = queryBuilder(mockExecutor);
+
+      expect(qb).toBeInstanceOf(QueryBuilder);
+    });
+
+    it("should work the same as using new QueryBuilder()", () => {
+      const condition = and(eq("status", "ACTIVE"), like("name", "John%"));
+
+      const cqlWithNew = new QueryBuilder().filter(condition).toCQL();
+      const cqlWithFactory = queryBuilder().filter(condition).toCQL();
+
+      expect(cqlWithFactory).toEqual(cqlWithNew);
+    });
+
+    it("should support cloning", () => {
+      const base = queryBuilder().filter(eq("type", "product"));
+      const clone = base
+        .clone()
+        .filter(and(eq("type", "product"), eq("status", "ACTIVE")));
+
+      expect(base.toCQL()).toEqual("type = 'product'");
+      expect(clone.toCQL()).toEqual("(type = 'product' AND status = 'ACTIVE')");
     });
   });
 });

@@ -4,9 +4,7 @@
   "description": "A TypeScript library for building CQL queries",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -22,12 +20,7 @@
     "prepublishOnly": "npm run build",
     "lint": "biome lint ./src"
   },
-  "keywords": [
-    "cql",
-    "query",
-    "ogc",
-    "typescript"
-  ],
+  "keywords": ["cql", "query", "ogc", "typescript"],
   "author": "maunderscott@gmail.com",
   "license": "MIT",
   "devDependencies": {
@@ -43,5 +36,9 @@
     "@types/geojson": "^7946.0.16",
     "jsts": "^2.12.1"
   },
-  "packageManager": "pnpm@10.5.2"
+  "packageManager": "pnpm@10.5.2",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kysumi/dyno-cql.git"
+  }
 }

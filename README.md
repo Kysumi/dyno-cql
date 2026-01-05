@@ -64,8 +64,8 @@ gte("quantity", 5)            // → quantity >= 5
 between("age", 18, 65)        // → age BETWEEN 18 AND 65
 
 // Null checks
-isNull("deletedAt")           // → deletedAt = NULL
-isNotNull("email")            // → email <> NULL
+isNull("deletedAt")           // → deletedAt IS NULL
+isNotNull("email")            // → email IS NOT NULL
 ```
 
 ### Real-world example
@@ -420,36 +420,6 @@ const query = queryBuilder()
 // Use directly in fetch
 fetch(`/api/products?filter=${query}`);
 ```
-
-## Error Handling
-
-Dyno CQL provides specific error types to help you debug issues.
-
-```typescript
-import {
-  queryBuilder,
-  eq,
-  CQLError,
-  InvalidConditionError,
-  UnsupportedConditionTypeError
-} from 'dyno-cql';
-
-try {
-  const query = queryBuilder()
-    .filter(eq("status", undefined))
-    .toCQL();
-} catch (error) {
-  if (error instanceof InvalidConditionError) {
-    console.error('Invalid condition:', error.message);
-    console.error('Missing:', error.missingAttribute);
-  } else if (error instanceof UnsupportedConditionTypeError) {
-    console.error('Unsupported type:', error.conditionType);
-  } else if (error instanceof CQLError) {
-    console.error('CQL error:', error.message);
-  }
-}
-```
-
 ## API Reference
 
 ### Comparison Operators

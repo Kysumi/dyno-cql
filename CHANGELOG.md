@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/Kysumi/dyno-cql/compare/v1.1.1...v1.2.0) (2026-01-05)
+
+
+### Features
+
+* Adding support for temporal filters ([525ae1c](https://github.com/Kysumi/dyno-cql/commit/525ae1c2041778932c37a6ce17fe7c5880bbaed7))
+
 ## [1.1.1](https://github.com/Kysumi/dyno-cql/compare/v1.1.0...v1.1.1) (2025-10-31)
 
 # [1.1.0](https://github.com/Kysumi/dyno-cql/compare/v1.0.2...v1.1.0) (2025-10-31)

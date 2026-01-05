@@ -1,3 +1,4 @@
+import { InvalidConditionError } from "../errors";
 import type { Condition } from "./base-types";
 
 /**
@@ -12,6 +13,16 @@ import type { Condition } from "./base-types";
 export const and = (...conditions: Condition[]): Condition => ({
   type: "and",
   conditions,
+  toCQL: (ctx) => {
+    if (!conditions || conditions.length === 0) {
+      throw new InvalidConditionError(
+        "and",
+        { type: "and", conditions },
+        "conditions (non-empty array)",
+      );
+    }
+    return `(${conditions.map((c) => c.toCQL(ctx)).join(" AND ")})`;
+  },
 });
 
 /**
@@ -26,6 +37,16 @@ export const and = (...conditions: Condition[]): Condition => ({
 export const or = (...conditions: Condition[]): Condition => ({
   type: "or",
   conditions,
+  toCQL: (ctx) => {
+    if (!conditions || conditions.length === 0) {
+      throw new InvalidConditionError(
+        "or",
+        { type: "or", conditions },
+        "conditions (non-empty array)",
+      );
+    }
+    return `(${conditions.map((c) => c.toCQL(ctx)).join(" OR ")})`;
+  },
 });
 
 /**
@@ -37,4 +58,10 @@ export const or = (...conditions: Condition[]): Condition => ({
 export const not = (condition: Condition): Condition => ({
   type: "not",
   condition,
+  toCQL: (ctx) => {
+    if (!condition) {
+      throw new InvalidConditionError("not", { type: "not" }, "condition");
+    }
+    return `NOT (${condition.toCQL(ctx)})`;
+  },
 });

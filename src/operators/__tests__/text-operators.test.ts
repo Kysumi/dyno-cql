@@ -1,38 +1,26 @@
-import { describe, it, expect } from "vitest";
-import { like, contains } from "../text-operators";
+import { describe, expect, it } from "vitest";
+import { createCQLContext } from "../../cql-context";
+import { contains, like } from "../text-operators";
 
 describe("Text Operators", () => {
-  describe("like operator", () => {
-    it("should create a correct LIKE condition", () => {
-      const condition = like("name", "A%");
+  const ctx = createCQLContext();
 
-      expect(condition).toEqual({
-        type: "like",
-        attr: "name",
-        value: "A%",
-      });
+  describe("like operator", () => {
+    it("should generate correct CQL for a LIKE condition", () => {
+      const condition = like("name", "A%");
+      expect(condition.toCQL(ctx)).toBe("name LIKE 'A%'");
     });
 
-    it("should work with more complex patterns", () => {
+    it("should generate correct CQL for more complex patterns", () => {
       const condition = like("email", "%.com");
-
-      expect(condition).toEqual({
-        type: "like",
-        attr: "email",
-        value: "%.com",
-      });
+      expect(condition.toCQL(ctx)).toBe("email LIKE '%.com'");
     });
   });
 
   describe("contains operator", () => {
-    it("should create a correct contains condition", () => {
+    it("should generate correct CQL for a contains condition", () => {
       const condition = contains("description", "important");
-
-      expect(condition).toEqual({
-        type: "contains",
-        attr: "description",
-        value: "important",
-      });
+      expect(condition.toCQL(ctx)).toBe("description LIKE '%important%'");
     });
   });
 });

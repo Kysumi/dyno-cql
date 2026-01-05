@@ -18,6 +18,23 @@ import {
   spatialContains,
   within,
 } from "../operators/spatial-operators";
+import {
+  after,
+  anyinteracts,
+  before,
+  begins,
+  begunby,
+  during,
+  endedby,
+  ends,
+  meets,
+  metby,
+  overlappedby,
+  tcontains,
+  tequals,
+  tintersects,
+  toverlaps,
+} from "../operators/temporal-operators";
 import { contains, like } from "../operators/text-operators";
 import { QueryBuilder, queryBuilder } from "../query-builder";
 
@@ -41,8 +58,7 @@ describe("QueryBuilder", () => {
       const clone = qb.clone();
 
       expect(clone).not.toBe(qb); // Different instance
-
-      expect(clone._getOptions().filter).toEqual(qb._getOptions().filter); // Same filter
+      expect(clone.toCQL()).toEqual(qb.toCQL()); // Same filter
     });
 
     it("should not affect the original when clone is modified", () => {
@@ -52,8 +68,8 @@ describe("QueryBuilder", () => {
       const clone = qb.clone();
       clone.filter(eq("status", "PENDING"));
 
-      expect(qb._getOptions().filter).toEqual(eq("status", "ACTIVE"));
-      expect(clone._getOptions().filter).toEqual(eq("status", "PENDING"));
+      expect(qb.toCQL()).toBe("status = 'ACTIVE'");
+      expect(clone.toCQL()).toBe("status = 'PENDING'");
     });
   });
 
@@ -109,11 +125,11 @@ describe("QueryBuilder", () => {
       );
 
       expect(new QueryBuilder().filter(isNull("deletedAt")).toCQL()).toEqual(
-        "deletedAt = NULL",
+        "deletedAt IS NULL",
       );
 
       expect(new QueryBuilder().filter(isNotNull("email")).toCQL()).toEqual(
-        "email <> NULL",
+        "email IS NOT NULL",
       );
     });
 
@@ -190,6 +206,149 @@ describe("QueryBuilder", () => {
       expect(cql).toContain("(status = 'PENDING' OR status = 'PROCESSING')");
       expect(cql).toContain("NOT (deleted = TRUE)");
       expect(cql).toContain("createdAt > TIMESTAMP('");
+    });
+
+    it("should convert temporal operators to CQL with timestamp strings", () => {
+      expect(
+        new QueryBuilder()
+          .filter(anyinteracts("eventDate", "2023-01-01T00:00:00Z"))
+          .toCQL(),
+      ).toEqual("ANYINTERACTS(eventDate, TIMESTAMP('2023-01-01T00:00:00Z'))");
+
+      expect(
+        new QueryBuilder()
+          .filter(after("eventDate", "2023-01-01T00:00:00Z"))
+          .toCQL(),
+      ).toEqual("AFTER(eventDate, TIMESTAMP('2023-01-01T00:00:00Z'))");
+
+      expect(
+        new QueryBuilder()
+          .filter(before("eventDate", "2023-12-31T23:59:59Z"))
+          .toCQL(),
+      ).toEqual("BEFORE(eventDate, TIMESTAMP('2023-12-31T23:59:59Z'))");
+
+      expect(
+        new QueryBuilder()
+          .filter(tequals("eventDate", "2023-06-15T12:00:00Z"))
+          .toCQL(),
+      ).toEqual("TEQUALS(eventDate, TIMESTAMP('2023-06-15T12:00:00Z'))");
+    });
+
+    it("should convert temporal operators to CQL with Date objects", () => {
+      const date = new Date("2023-06-15T12:00:00.000Z");
+      expect(
+        new QueryBuilder().filter(after("eventDate", date)).toCQL(),
+      ).toEqual("AFTER(eventDate, TIMESTAMP('2023-06-15T12:00:00.000Z'))");
+
+      expect(
+        new QueryBuilder().filter(before("eventDate", date)).toCQL(),
+      ).toEqual("BEFORE(eventDate, TIMESTAMP('2023-06-15T12:00:00.000Z'))");
+
+      expect(
+        new QueryBuilder().filter(tequals("eventDate", date)).toCQL(),
+      ).toEqual("TEQUALS(eventDate, TIMESTAMP('2023-06-15T12:00:00.000Z'))");
+    });
+
+    it("should convert temporal operators to CQL with intervals", () => {
+      const interval = {
+        start: "2023-01-01T00:00:00Z",
+        end: "2023-12-31T23:59:59Z",
+      };
+
+      expect(
+        new QueryBuilder().filter(during("eventDate", interval)).toCQL(),
+      ).toEqual(
+        "DURING(eventDate, INTERVAL('2023-01-01T00:00:00Z', '2023-12-31T23:59:59Z'))",
+      );
+
+      expect(
+        new QueryBuilder().filter(anyinteracts("eventDate", interval)).toCQL(),
+      ).toEqual(
+        "ANYINTERACTS(eventDate, INTERVAL('2023-01-01T00:00:00Z', '2023-12-31T23:59:59Z'))",
+      );
+
+      expect(
+        new QueryBuilder().filter(toverlaps("eventPeriod", interval)).toCQL(),
+      ).toEqual(
+        "TOVERLAPS(eventPeriod, INTERVAL('2023-01-01T00:00:00Z', '2023-12-31T23:59:59Z'))",
+      );
+
+      expect(
+        new QueryBuilder()
+          .filter(overlappedby("eventPeriod", interval))
+          .toCQL(),
+      ).toEqual(
+        "OVERLAPPEDBY(eventPeriod, INTERVAL('2023-01-01T00:00:00Z', '2023-12-31T23:59:59Z'))",
+      );
+    });
+
+    it("should convert temporal operators to CQL with Date objects in intervals", () => {
+      const interval = {
+        start: new Date("2023-01-01T00:00:00.000Z"),
+        end: new Date("2023-12-31T23:59:59.000Z"),
+      };
+
+      expect(
+        new QueryBuilder().filter(during("eventDate", interval)).toCQL(),
+      ).toEqual(
+        "DURING(eventDate, INTERVAL('2023-01-01T00:00:00.000Z', '2023-12-31T23:59:59.000Z'))",
+      );
+    });
+
+    it("should convert all temporal interval operators to CQL", () => {
+      const timestamp = "2023-06-15T12:00:00Z";
+      const interval = { start: "2023-01-01", end: "2023-12-31" };
+
+      expect(
+        new QueryBuilder().filter(begins("eventPeriod", timestamp)).toCQL(),
+      ).toEqual("BEGINS(eventPeriod, TIMESTAMP('2023-06-15T12:00:00Z'))");
+
+      expect(
+        new QueryBuilder().filter(begunby("eventPeriod", timestamp)).toCQL(),
+      ).toEqual("BEGUNBY(eventPeriod, TIMESTAMP('2023-06-15T12:00:00Z'))");
+
+      expect(
+        new QueryBuilder().filter(tcontains("eventPeriod", timestamp)).toCQL(),
+      ).toEqual("TCONTAINS(eventPeriod, TIMESTAMP('2023-06-15T12:00:00Z'))");
+
+      expect(
+        new QueryBuilder().filter(endedby("eventPeriod", timestamp)).toCQL(),
+      ).toEqual("ENDEDBY(eventPeriod, TIMESTAMP('2023-06-15T12:00:00Z'))");
+
+      expect(
+        new QueryBuilder().filter(ends("eventPeriod", timestamp)).toCQL(),
+      ).toEqual("ENDS(eventPeriod, TIMESTAMP('2023-06-15T12:00:00Z'))");
+
+      expect(
+        new QueryBuilder().filter(meets("eventPeriod", interval)).toCQL(),
+      ).toEqual("MEETS(eventPeriod, INTERVAL('2023-01-01', '2023-12-31'))");
+
+      expect(
+        new QueryBuilder().filter(metby("eventPeriod", interval)).toCQL(),
+      ).toEqual("METBY(eventPeriod, INTERVAL('2023-01-01', '2023-12-31'))");
+
+      expect(
+        new QueryBuilder().filter(tintersects("eventDate", timestamp)).toCQL(),
+      ).toEqual("TINTERSECTS(eventDate, TIMESTAMP('2023-06-15T12:00:00Z'))");
+    });
+
+    it("should handle complex conditions with temporal operators", () => {
+      const condition = and(
+        after("startDate", "2023-01-01T00:00:00Z"),
+        before("endDate", "2023-12-31T23:59:59Z"),
+        eq("status", "ACTIVE"),
+      );
+
+      const cql = new QueryBuilder().filter(condition).toCQL();
+
+      expect(cql).toContain(
+        "AFTER(startDate, TIMESTAMP('2023-01-01T00:00:00Z'))",
+      );
+      expect(cql).toContain(
+        "BEFORE(endDate, TIMESTAMP('2023-12-31T23:59:59Z'))",
+      );
+      expect(cql).toContain("status = 'ACTIVE'");
+      expect(cql).toContain(" AND ");
     });
   });
 

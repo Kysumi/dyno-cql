@@ -6,6 +6,7 @@ export { queryBuilder } from "./query-builder";
 export * from "./operators/comparison-operators";
 export * from "./operators/logical-operators";
 export * from "./operators/spatial-operators";
+export * from "./operators/temporal-operators";
 export * from "./operators/text-operators";
 
 // Errors

@@ -1,5 +1,6 @@
 import type { Geometry } from "geojson";
 import type { Path, PathType } from "./path-type";
+import type { TemporalOperator, TemporalValue } from "./temporal-operators";
 
 /**
  * Supported comparison operators for OGC CQL conditions.
@@ -40,12 +41,30 @@ export type SpatialOperator =
 export type TextOperator = "like" | "contains";
 
 /**
+ * Context object providing formatting utilities for CQL serialization.
+ */
+export interface CQLContext {
+  formatValue: (value: unknown) => string;
+  formatTemporalValue: (value: TemporalValue) => string;
+  formatSpatialQuery: (
+    operator: string,
+    attr: string,
+    geometry: Geometry,
+  ) => string;
+}
+
+/**
  * Represents an OGC CQL condition expression.
- * Can be either a comparison condition or a logical combination of conditions.
+ * Conditions are self-serializing objects that know how to convert themselves to CQL strings.
  */
 export interface Condition {
-  /** The type of condition (comparison, logical, spatial, or text operator) */
-  type: ComparisonOperator | LogicalOperator | SpatialOperator | TextOperator;
+  /** The type of condition (comparison, logical, spatial, temporal, or text operator) */
+  type:
+    | ComparisonOperator
+    | LogicalOperator
+    | SpatialOperator
+    | TemporalOperator
+    | TextOperator;
   /** The attribute name for comparison conditions */
   attr?: string;
   /** The value to compare against for comparison conditions */
@@ -56,6 +75,8 @@ export interface Condition {
   condition?: Condition;
   /** Geometry for spatial operators */
   geometry?: Geometry;
+  /** Self-serialization method that converts this condition to a CQL string */
+  toCQL: (context: CQLContext) => string;
 }
 
 /**
@@ -86,6 +107,23 @@ export type ConditionOperator<T extends Record<string, unknown>> = {
     geometry: Geometry,
   ) => Condition;
   within: <K extends Path<T>>(attr: K, geometry: Geometry) => Condition;
+  // Temporal operators
+  anyinteracts: <K extends Path<T>>(attr: K, value: TemporalValue) => Condition;
+  after: <K extends Path<T>>(attr: K, value: TemporalValue) => Condition;
+  before: <K extends Path<T>>(attr: K, value: TemporalValue) => Condition;
+  begins: <K extends Path<T>>(attr: K, value: TemporalValue) => Condition;
+  begunby: <K extends Path<T>>(attr: K, value: TemporalValue) => Condition;
+  tcontains: <K extends Path<T>>(attr: K, value: TemporalValue) => Condition;
+  during: <K extends Path<T>>(attr: K, value: TemporalValue) => Condition;
+  endedby: <K extends Path<T>>(attr: K, value: TemporalValue) => Condition;
+  ends: <K extends Path<T>>(attr: K, value: TemporalValue) => Condition;
+  tequals: <K extends Path<T>>(attr: K, value: TemporalValue) => Condition;
+  meets: <K extends Path<T>>(attr: K, value: TemporalValue) => Condition;
+  metby: <K extends Path<T>>(attr: K, value: TemporalValue) => Condition;
+  toverlaps: <K extends Path<T>>(attr: K, value: TemporalValue) => Condition;
+  overlappedby: <K extends Path<T>>(attr: K, value: TemporalValue) => Condition;
+  tintersects: <K extends Path<T>>(attr: K, value: TemporalValue) => Condition;
+  // Logical operators
   and: (...conditions: Condition[]) => Condition;
   or: (...conditions: Condition[]) => Condition;
   not: (condition: Condition) => Condition;

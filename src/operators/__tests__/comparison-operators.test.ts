@@ -1,142 +1,90 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+import { createCQLContext } from "../../cql-context";
 import {
+  between,
   eq,
-  ne,
-  lt,
-  lte,
   gt,
   gte,
-  between,
-  isNull,
   isNotNull,
+  isNull,
+  lt,
+  lte,
+  ne,
 } from "../comparison-operators";
 
 describe("Comparison Operators", () => {
-  describe("eq operator", () => {
-    it("should create a correct equals condition", () => {
-      const condition = eq("status", "ACTIVE");
+  const ctx = createCQLContext();
 
-      expect(condition).toEqual({
-        type: "eq",
-        attr: "status",
-        value: "ACTIVE",
-      });
+  describe("eq operator", () => {
+    it("should generate correct CQL for string values", () => {
+      const condition = eq("status", "ACTIVE");
+      expect(condition.toCQL(ctx)).toBe("status = 'ACTIVE'");
     });
 
-    it("should work with numeric values", () => {
+    it("should generate correct CQL for numeric values", () => {
       const condition = eq("age", 30);
-
-      expect(condition).toEqual({
-        type: "eq",
-        attr: "age",
-        value: 30,
-      });
+      expect(condition.toCQL(ctx)).toBe("age = 30");
     });
 
     it("should work with boolean values", () => {
       const condition = eq("active", true);
-
-      expect(condition).toEqual({
-        type: "eq",
-        attr: "active",
-        value: true,
-      });
+      expect(condition.toCQL(ctx)).toBe("active = TRUE");
     });
   });
 
   describe("ne operator", () => {
-    it("should create a correct not equals condition", () => {
+    it("should generate correct CQL for a not equals condition", () => {
       const condition = ne("status", "DELETED");
-
-      expect(condition).toEqual({
-        type: "ne",
-        attr: "status",
-        value: "DELETED",
-      });
+      expect(condition.toCQL(ctx)).toBe("status <> 'DELETED'");
     });
   });
 
   describe("lt operator", () => {
-    it("should create a correct less than condition", () => {
+    it("should generate correct CQL for a less than condition", () => {
       const condition = lt("age", 18);
-
-      expect(condition).toEqual({
-        type: "lt",
-        attr: "age",
-        value: 18,
-      });
+      expect(condition.toCQL(ctx)).toBe("age < 18");
     });
   });
 
   describe("lte operator", () => {
-    it("should create a correct less than or equal condition", () => {
+    it("should generate correct CQL for a less than or equal condition", () => {
       const condition = lte("score", 100);
-
-      expect(condition).toEqual({
-        type: "lte",
-        attr: "score",
-        value: 100,
-      });
+      expect(condition.toCQL(ctx)).toBe("score <= 100");
     });
   });
 
   describe("gt operator", () => {
-    it("should create a correct greater than condition", () => {
+    it("should generate correct CQL for a greater than condition", () => {
       const condition = gt("price", 50);
-
-      expect(condition).toEqual({
-        type: "gt",
-        attr: "price",
-        value: 50,
-      });
+      expect(condition.toCQL(ctx)).toBe("price > 50");
     });
   });
 
   describe("gte operator", () => {
-    it("should create a correct greater than or equal condition", () => {
+    it("should generate correct CQL for a greater than or equal condition", () => {
       const condition = gte("quantity", 5);
-
-      expect(condition).toEqual({
-        type: "gte",
-        attr: "quantity",
-        value: 5,
-      });
+      expect(condition.toCQL(ctx)).toBe("quantity >= 5");
     });
   });
 
   describe("between operator", () => {
-    it("should create a correct between condition", () => {
+    it("should generate correct CQL for a between condition", () => {
       const condition = between("age", 18, 65);
-
-      expect(condition).toEqual({
-        type: "between",
-        attr: "age",
-        value: [18, 65],
-      });
+      expect(condition.toCQL(ctx)).toBe("age BETWEEN 18 AND 65");
     });
   });
 
   describe("isNull operator", () => {
-    it("should create a correct is null condition", () => {
+    it("should generate correct CQL for an is null condition", () => {
       const condition = isNull("deletedAt");
-
-      expect(condition).toEqual({
-        type: "eq",
-        attr: "deletedAt",
-        value: null,
-      });
+      expect(condition.toCQL(ctx)).toBe("deletedAt IS NULL");
     });
   });
 
   describe("isNotNull operator", () => {
-    it("should create a correct is not null condition", () => {
+    it("should generate correct CQL for an is not null condition", () => {
       const condition = isNotNull("email");
-
-      expect(condition).toEqual({
-        type: "ne",
-        attr: "email",
-        value: null,
-      });
+      expect(condition.toCQL(ctx)).toBe("email IS NOT NULL");
     });
   });
 });

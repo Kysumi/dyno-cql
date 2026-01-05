@@ -64,8 +64,8 @@ gte("quantity", 5)            // → quantity >= 5
 between("age", 18, 65)        // → age BETWEEN 18 AND 65
 
 // Null checks
-isNull("deletedAt")           // → deletedAt = NULL
-isNotNull("email")            // → email <> NULL
+isNull("deletedAt")           // → deletedAt IS NULL
+isNotNull("email")            // → email IS NOT NULL
 ```
 
 ### Real-world example

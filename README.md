@@ -93,24 +93,6 @@ isNull("deletedAt")           // → deletedAt IS NULL
 isNotNull("email")            // → email IS NOT NULL
 ```
 
-### Real-world example
-
-```typescript
-import { queryBuilder, and, gte, lte, ne } from 'dyno-cql';
-
-// Find products in stock within a price range
-const query = queryBuilder()
-  .filter(
-    and(
-      gte("price", 10),
-      lte("price", 100),
-      ne("stock", 0)
-    )
-  )
-  .toCQL();
-// → (price >= 10 AND price <= 100 AND stock <> 0)
-```
-
 ## Text Operators
 
 String matching for search functionality.
@@ -123,23 +105,6 @@ like("name", "A")                    // → name LIKE 'A%'
 
 // Substring search
 contains("description", "important")  // → description LIKE '%important%'
-```
-
-### Real-world example
-
-```typescript
-import { queryBuilder, and, contains, eq } from 'dyno-cql';
-
-// Search active blog posts
-const query = queryBuilder()
-  .filter(
-    and(
-      contains("title", "TypeScript"),
-      eq("published", true)
-    )
-  )
-  .toCQL();
-// → (title LIKE '%TypeScript%' AND published = true)
 ```
 
 ## Logical Operators
@@ -166,26 +131,6 @@ or(
 // NOT - negate a condition
 not(eq("status", "DELETED"))
 // → NOT (status = 'DELETED')
-```
-
-### Real-world example
-
-```typescript
-import { queryBuilder, and, or, eq, gte } from 'dyno-cql';
-
-// Find premium or high-value active customers
-const query = queryBuilder()
-  .filter(
-    and(
-      eq("status", "ACTIVE"),
-      or(
-        eq("tier", "PREMIUM"),
-        gte("lifetimeValue", 10000)
-      )
-    )
-  )
-  .toCQL();
-// → (status = 'ACTIVE' AND (tier = 'PREMIUM' OR lifetimeValue >= 10000))
 ```
 
 ## Spatial Operators
@@ -238,33 +183,6 @@ crosses("geometry", line)
 | `overlaps` | Geometries overlap but neither contains the other |
 | `crosses` | Geometries cross each other |
 | `spatialEquals` | Geometries are spatially equal |
-
-### Real-world example
-
-```typescript
-import { queryBuilder, and, intersects, eq } from 'dyno-cql';
-
-// Find available properties in a bounding box
-const searchArea = {
-  type: "Polygon",
-  coordinates: [[
-    [-122.5, 37.7],
-    [-122.3, 37.7],
-    [-122.3, 37.9],
-    [-122.5, 37.9],
-    [-122.5, 37.7]
-  ]]
-};
-
-const query = queryBuilder()
-  .filter(
-    and(
-      intersects("location", searchArea),
-      eq("available", true)
-    )
-  )
-  .toCQL();
-```
 
 ## Temporal Operators
 
@@ -361,23 +279,6 @@ metby("eventPeriod", { start: "2022-07-01", end: "2023-01-01" })
 // Temporal intersection
 tintersects("eventDate", "2023-06-15T12:00:00Z")
 // → TINTERSECTS(eventDate, TIMESTAMP('2023-06-15T12:00:00Z'))
-```
-
-### Real-world example
-
-```typescript
-import { queryBuilder, and, after, before, eq } from 'dyno-cql';
-
-// Find active events in Q2 2023
-const query = queryBuilder()
-  .filter(
-    and(
-      after("startDate", "2023-04-01T00:00:00Z"),
-      before("endDate", "2023-06-30T23:59:59Z"),
-      eq("status", "ACTIVE")
-    )
-  )
-  .toCQL();
 ```
 
 ## Advanced Usage

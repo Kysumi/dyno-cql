@@ -43,6 +43,31 @@ const complex = queryBuilder()
 // → (status = 'ACTIVE' AND age > 18)
 ```
 
+## Type Safety
+
+Define interfaces for your data to get full type safety on attribute names and value types
+
+```typescript
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  inStock: boolean;
+}
+
+// Type-safe query builder
+const productQuery = queryBuilder<Product>()
+  .filter((op) => 
+    op.and(
+      // the attribute name and value types are checked
+      op.eq("name", "Laptop"),        // ✓ Valid attribute
+      op.gte("price", 500),           // ✓ Valid type (number)
+      op.eq("inStock", true),         // ✓ Valid type (boolean)
+      // op.eq("invalid", "val")      // ✗ Compile error
+    )
+  )
+```
+
 ## Comparison Operators
 
 Standard value comparisons for filtering your data.

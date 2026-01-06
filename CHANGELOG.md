@@ -1,3 +1,5 @@
+## [1.2.2](https://github.com/Kysumi/dyno-cql/compare/v1.2.1...v1.2.2) (2026-01-06)
+
 ## [1.2.1](https://github.com/Kysumi/dyno-cql/compare/v1.2.0...v1.2.1) (2026-01-05)
 
 # [1.2.0](https://github.com/Kysumi/dyno-cql/compare/v1.1.1...v1.2.0) (2026-01-05)

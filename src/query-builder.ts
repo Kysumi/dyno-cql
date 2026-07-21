@@ -5,13 +5,13 @@ import {
   eq,
   gt,
   gte,
-  in as inOp,
+  isIn,
   isNotNull,
   isNull,
   lt,
   lte,
   ne,
-  notIn,
+  isNotIn,
 } from "./operators/comparison-operators";
 import { and, not, or } from "./operators/logical-operators";
 import {
@@ -51,8 +51,8 @@ const BASE_CONDITION_OPERATOR = {
   gt,
   gte,
   between,
-  in: inOp,
-  notIn,
+  isIn,
+  isNotIn,
   contains,
   and,
   or,

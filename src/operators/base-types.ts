@@ -117,8 +117,8 @@ export type ConditionOperator<T extends Record<string, unknown>> = {
     lower: PathType<T, K>,
     upper: PathType<T, K>,
   ) => Condition;
-  in: <K extends Path<T>>(attr: K, values: Array<PathType<T, K>>) => Condition;
-  notIn: <K extends Path<T>>(
+  isIn: <K extends Path<T>>(attr: K, values: Array<PathType<T, K>>) => Condition;
+  isNotIn: <K extends Path<T>>(
     attr: K,
     values: Array<PathType<T, K>>,
   ) => Condition;

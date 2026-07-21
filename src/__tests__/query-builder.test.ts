@@ -146,13 +146,13 @@ describe("QueryBuilder", () => {
     it("should convert IN and NOT IN operators to CQL", () => {
       expect(
         new QueryBuilder()
-          .filter((op) => op.in("investigation_type", ["CPT", "OTHER"]))
+          .filter((op) => op.isIn("investigation_type", ["CPT", "OTHER"]))
           .toCQL(),
       ).toEqual("investigation_type IN ('CPT', 'OTHER')");
 
       expect(
         new QueryBuilder()
-          .filter((op) => op.notIn("status", ["DELETED", "ARCHIVED"]))
+          .filter((op) => op.isNotIn("status", ["DELETED", "ARCHIVED"]))
           .toCQL(),
       ).toEqual("status NOT IN ('DELETED', 'ARCHIVED')");
     });

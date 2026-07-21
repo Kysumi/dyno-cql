@@ -1,3 +1,11 @@
+# [1.3.0](https://github.com/Kysumi/dyno-cql/compare/v1.2.3...v1.3.0) (2026-07-21)
+
+
+### Features
+
+* Significant dep and build updates ([fc2aa9d](https://github.com/Kysumi/dyno-cql/commit/fc2aa9dcc66e5faa72e15a1a2348d0361e9d8052))
+* updating deps, updating internals of application, updating from tsup to tsdown ([097b12d](https://github.com/Kysumi/dyno-cql/commit/097b12dd29dba5bf3a9b4818326056c5eb8106b6))
+
 ## [1.2.3](https://github.com/Kysumi/dyno-cql/compare/v1.2.2...v1.2.3) (2026-01-06)
 
 ## [1.2.2](https://github.com/Kysumi/dyno-cql/compare/v1.2.1...v1.2.2) (2026-01-06)

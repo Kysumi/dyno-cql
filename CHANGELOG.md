@@ -1,3 +1,11 @@
+# [1.4.0](https://github.com/Kysumi/dyno-cql/compare/v1.3.0...v1.4.0) (2026-07-21)
+
+
+### Features
+
+* adding isIn and isNotIn operators ([a8ee0e1](https://github.com/Kysumi/dyno-cql/commit/a8ee0e175549d0a76f1f53e772b18e5306d7e979))
+* adding isIn and isNotIn operators ([1c89710](https://github.com/Kysumi/dyno-cql/commit/1c897105f74a37927c110458de6bacabdfb71940))
+
 # [1.3.0](https://github.com/Kysumi/dyno-cql/compare/v1.2.3...v1.3.0) (2026-07-21)
 
 

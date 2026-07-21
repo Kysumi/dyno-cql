@@ -7,12 +7,12 @@ Build type-safe OGC Common Query Language (CQL) filter expressions with a fluent
 
 ## Why Dyno CQL?
 
-Working with geospatial and temporal data shouldn't mean wrestling with raw CQL strings. Dyno CQL gives you:
+Building complex CQL queries by concatenating strings is a headache. Dyno CQL provides a better way to generate CQL filters:
 
-- **Full TypeScript support** - Catch errors at compile time, not runtime
-- **Fluent chaining** - Build complex filters that read like sentences
-- **Zero string concatenation** - No more manual escaping or formatting
-- **OGC CQL2 compliant** - Works with modern geospatial APIs
+- **Type safety:** Catch typos and invalid types at compile time.
+- **Fluent builder:** Chain conditions together without worrying about brackets or operator precedence.
+- **Automatic escaping:** Values are safely formatted and escaped.
+- **Standards compliant:** Outputs valid OGC CQL2 ready for your geospatial APIs.
 
 ## Installation
 

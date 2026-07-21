@@ -1,5 +1,5 @@
 import { InvalidConditionError } from "../errors";
-import type { CQLContext, Condition, TextCondition } from "./base-types";
+import type { Condition, CQLContext, TextCondition } from "./base-types";
 
 function createTextOperator(
   type: TextCondition["type"],

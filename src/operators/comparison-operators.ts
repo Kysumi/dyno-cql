@@ -157,6 +157,7 @@ export const isNotNull = createNullComparison("ne", "IS NOT NULL");
  * @see {@link https://docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Comparison Operators}
  */
 const inCondition = createInComparison("in", "IN");
+
 export { inCondition as in };
 
 /**

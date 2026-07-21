@@ -21,6 +21,7 @@
     "test:watch": "vitest",
     "check-ts": "tsc",
     "prepublishOnly": "npm run build",
+    "format": "biome check --write",
     "lint": "biome lint ./src"
   },
   "keywords": [

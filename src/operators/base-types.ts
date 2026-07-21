@@ -13,7 +13,9 @@ export type ComparisonOperator =
   | "lte"
   | "gt"
   | "gte"
-  | "between";
+  | "between"
+  | "in"
+  | "notIn";
 
 /**
  * Logical operators for combining multiple conditions.
@@ -95,6 +97,11 @@ export type ConditionOperator<T extends Record<string, unknown>> = {
     attr: K,
     lower: PathType<T, K>,
     upper: PathType<T, K>,
+  ) => Condition;
+  in: <K extends Path<T>>(attr: K, values: Array<PathType<T, K>>) => Condition;
+  notIn: <K extends Path<T>>(
+    attr: K,
+    values: Array<PathType<T, K>>,
   ) => Condition;
   contains: <K extends Path<T>>(attr: K, value: string) => Condition;
   like: <K extends Path<T>>(attr: K, value: string) => Condition;

@@ -63,6 +63,7 @@ const productQuery = queryBuilder<Product>()
       op.eq("name", "Laptop"),        // ✓ Valid attribute
       op.gte("price", 500),           // ✓ Valid type (number)
       op.eq("inStock", true),         // ✓ Valid type (boolean)
+      op.in("id", ["p1", "p2"]),      // ✓ Valid list values
       // op.eq("invalid", "val")      // ✗ Compile error
     )
   )
@@ -73,7 +74,7 @@ const productQuery = queryBuilder<Product>()
 Standard value comparisons for filtering your data.
 
 ```typescript
-import { eq, ne, lt, lte, gt, gte, between, isNull, isNotNull } from 'dyno-cql';
+import { eq, ne, lt, lte, gt, gte, between, in as inOp, notIn, isNull, isNotNull } from 'dyno-cql';
 
 // Equality
 eq("status", "ACTIVE")        // → status = 'ACTIVE'
@@ -87,6 +88,10 @@ gte("quantity", 5)            // → quantity >= 5
 
 // Range queries
 between("age", 18, 65)        // → age BETWEEN 18 AND 65
+
+// List membership
+inOp("investigation_type", ["CPT", "OTHER"]) // → investigation_type IN ('CPT', 'OTHER')
+notIn("status", ["DELETED", "ARCHIVED"])     // → status NOT IN ('DELETED', 'ARCHIVED')
 
 // Null checks
 isNull("deletedAt")           // → deletedAt IS NULL
@@ -356,6 +361,8 @@ fetch(`/api/products?filter=${query}`);
 - `gt(attr, value)` - Greater than
 - `gte(attr, value)` - Greater than or equal to
 - `between(attr, min, max)` - Between two values
+- `in(attr, values)` - Value is in list
+- `notIn(attr, values)` - Value is not in list
 - `isNull(attr)` - Is null
 - `isNotNull(attr)` - Is not null
 

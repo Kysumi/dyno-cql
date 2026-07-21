@@ -1,5 +1,4 @@
 import type { Geometry } from "geojson";
-// @ts-expect-error - ignore resolution issues with JSTS module
 import GeoJSONReader from "jsts/org/locationtech/jts/io/GeoJSONReader.js";
 import WKTWriter from "jsts/org/locationtech/jts/io/WKTWriter.js";
 import { SpatialOperationError } from "./errors";

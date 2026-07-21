@@ -69,6 +69,62 @@ const productQuery = queryBuilder<Product>()
   )
 ```
 
+## API Reference
+
+### Comparison Operators
+- [`eq(attr, value)`](#comparison-operators) - Equal to
+- [`ne(attr, value)`](#comparison-operators) - Not equal to
+- [`lt(attr, value)`](#comparison-operators) - Less than
+- [`lte(attr, value)`](#comparison-operators) - Less than or equal to
+- [`gt(attr, value)`](#comparison-operators) - Greater than
+- [`gte(attr, value)`](#comparison-operators) - Greater than or equal to
+- [`between(attr, min, max)`](#comparison-operators) - Between two values
+- [`isIn(attr, values)`](#comparison-operators) - Value is in list
+- [`isNotIn(attr, values)`](#comparison-operators) - Value is not in list
+- [`isNull(attr)`](#comparison-operators) - Is null
+- [`isNotNull(attr)`](#comparison-operators) - Is not null
+
+### Text Operators
+- [`like(attr, value)`](#text-operators) - Match a caller-supplied wildcard pattern
+- [`contains(attr, value)`](#text-operators) - Substring match (%value%)
+
+### Logical Operators
+- [`and(...conditions)`](#logical-operators) - All conditions must match
+- [`or(...conditions)`](#logical-operators) - Any condition must match
+- [`not(condition)`](#logical-operators) - Negate a condition
+
+### Spatial Operators
+- [`intersects(attr, geometry)`](#spatial-operators) - Geometries intersect
+- [`disjoint(attr, geometry)`](#spatial-operators) - Geometries are disjoint
+- [`spatialContains(attr, geometry)`](#spatial-operators) - Contains geometry
+- [`within(attr, geometry)`](#spatial-operators) - Within geometry
+- [`touches(attr, geometry)`](#spatial-operators) - Touches geometry
+- [`overlaps(attr, geometry)`](#spatial-operators) - Overlaps geometry
+- [`crosses(attr, geometry)`](#spatial-operators) - Crosses geometry
+- [`spatialEquals(attr, geometry)`](#spatial-operators) - Spatially equal
+
+### Temporal Operators
+
+**Simple CQL:**
+- [`anyinteracts(attr, temporal)`](#simple-temporal-filtering) - Any temporal interaction
+
+**Enhanced operators:**
+- [`after(attr, timestamp)`](#point-in-time-operators) - After timestamp
+- [`before(attr, timestamp)`](#point-in-time-operators) - Before timestamp
+- [`tequals(attr, timestamp)`](#point-in-time-operators) - Temporally equal
+- [`during(attr, interval)`](#interval-operators) - During interval
+- [`toverlaps(attr, interval)`](#interval-operators) - Overlaps interval
+- [`overlappedby(attr, interval)`](#interval-operators) - Overlapped by interval
+- [`tcontains(attr, temporal)`](#interval-operators) - Contains temporal
+- [`begins(attr, timestamp)`](#boundary-operators) - Begins at timestamp
+- [`begunby(attr, timestamp)`](#boundary-operators) - Begun by timestamp
+- [`ends(attr, timestamp)`](#boundary-operators) - Ends at timestamp
+- [`endedby(attr, timestamp)`](#boundary-operators) - Ended by timestamp
+- [`meets(attr, interval)`](#boundary-operators) - Meets interval
+- [`metby(attr, interval)`](#boundary-operators) - Met by interval
+- [`tintersects(attr, temporal)`](#boundary-operators) - Temporally intersects
+
+
 ## Comparison Operators
 
 Standard value comparisons for filtering your data.
@@ -195,14 +251,16 @@ Filter data by time and date relationships. Supports ISO 8601 timestamps, Date o
 
 ### Simple temporal filtering
 
+The `anyinteracts` operator is the broadest temporal filter. It evaluates to true if the property has *any* interaction or overlap (e.g., contains, intersects, touches, or equals) with the provided time. It supports ISO 8601 strings, `Date` objects, and time intervals.
+
 ```typescript
 import { anyinteracts } from 'dyno-cql';
 
-// Match a specific timestamp
+// Match a specific timestamp (string or Date)
 anyinteracts("eventDate", "2023-01-01T00:00:00Z")
 // → ANYINTERACTS(eventDate, TIMESTAMP('2023-01-01T00:00:00Z'))
 
-// Match a time interval
+// Match a time interval (object with start and end)
 anyinteracts("eventDate", { start: "2023-01-01", end: "2023-12-31" })
 // → ANYINTERACTS(eventDate, INTERVAL('2023-01-01', '2023-12-31'))
 ```
@@ -351,60 +409,6 @@ const query = queryBuilder()
 // Use directly in fetch
 fetch(`/api/products?filter=${query}`);
 ```
-## API Reference
-
-### Comparison Operators
-- `eq(attr, value)` - Equal to
-- `ne(attr, value)` - Not equal to
-- `lt(attr, value)` - Less than
-- `lte(attr, value)` - Less than or equal to
-- `gt(attr, value)` - Greater than
-- `gte(attr, value)` - Greater than or equal to
-- `between(attr, min, max)` - Between two values
-- `isIn(attr, values)` - Value is in list
-- `isNotIn(attr, values)` - Value is not in list
-- `isNull(attr)` - Is null
-- `isNotNull(attr)` - Is not null
-
-### Text Operators
-- `like(attr, value)` - Match a caller-supplied wildcard pattern
-- `contains(attr, value)` - Substring match (%value%)
-
-### Logical Operators
-- `and(...conditions)` - All conditions must match
-- `or(...conditions)` - Any condition must match
-- `not(condition)` - Negate a condition
-
-### Spatial Operators
-- `intersects(attr, geometry)` - Geometries intersect
-- `disjoint(attr, geometry)` - Geometries are disjoint
-- `spatialContains(attr, geometry)` - Contains geometry
-- `within(attr, geometry)` - Within geometry
-- `touches(attr, geometry)` - Touches geometry
-- `overlaps(attr, geometry)` - Overlaps geometry
-- `crosses(attr, geometry)` - Crosses geometry
-- `spatialEquals(attr, geometry)` - Spatially equal
-
-### Temporal Operators
-
-**Simple CQL:**
-- `anyinteracts(attr, temporal)` - Any temporal interaction
-
-**Enhanced operators:**
-- `after(attr, timestamp)` - After timestamp
-- `before(attr, timestamp)` - Before timestamp
-- `tequals(attr, timestamp)` - Temporally equal
-- `during(attr, interval)` - During interval
-- `toverlaps(attr, interval)` - Overlaps interval
-- `overlappedby(attr, interval)` - Overlapped by interval
-- `tcontains(attr, temporal)` - Contains temporal
-- `begins(attr, timestamp)` - Begins at timestamp
-- `begunby(attr, timestamp)` - Begun by timestamp
-- `ends(attr, timestamp)` - Ends at timestamp
-- `endedby(attr, timestamp)` - Ended by timestamp
-- `meets(attr, interval)` - Meets interval
-- `metby(attr, interval)` - Met by interval
-- `tintersects(attr, temporal)` - Temporally intersects
 
 ## License
 

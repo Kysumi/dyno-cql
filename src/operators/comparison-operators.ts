@@ -202,3 +202,67 @@ export const isNotNull = (attr: string): Condition => ({
     return `${attr} IS NOT NULL`;
   },
 });
+
+/**
+ * Creates an IN condition checking if an attribute value matches any value in a list
+ * @example
+ * in_("investigation_type", ["CPT", "OTHER"]) // investigation_type IN ('CPT', 'OTHER')
+ * @see {@link https://docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Comparison Operators}
+ */
+const inCondition = (attr: string, values: unknown[]): Condition => ({
+  type: "in",
+  attr,
+  value: values,
+  toCQL: (ctx) => {
+    if (!attr) {
+      throw new InvalidConditionError(
+        "in",
+        { type: "in", attr, value: values },
+        "attr",
+      );
+    }
+    if (!values || !Array.isArray(values) || values.length === 0) {
+      throw new InvalidConditionError(
+        "in",
+        { type: "in", attr, value: values },
+        "values",
+      );
+    }
+    const formattedValues = values.map((v) => ctx.formatValue(v)).join(", ");
+    return `${attr} IN (${formattedValues})`;
+  },
+});
+
+export { inCondition as in };
+
+/**
+ * Creates a NOT IN condition checking if an attribute value does not match any value in a list
+ * @example
+ * notIn("status", ["DELETED", "ARCHIVED"]) // status NOT IN ('DELETED', 'ARCHIVED')
+ * @see {@link https://docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Comparison Operators}
+ */
+export const notIn = (attr: string, values: unknown[]): Condition => ({
+  type: "notIn",
+  attr,
+  value: values,
+  toCQL: (ctx) => {
+    if (!attr) {
+      throw new InvalidConditionError(
+        "notIn",
+        { type: "notIn", attr, value: values },
+        "attr",
+      );
+    }
+    if (!values || !Array.isArray(values) || values.length === 0) {
+      throw new InvalidConditionError(
+        "notIn",
+        { type: "notIn", attr, value: values },
+        "values",
+      );
+    }
+    const formattedValues = values.map((v) => ctx.formatValue(v)).join(", ");
+    return `${attr} NOT IN (${formattedValues})`;
+  },
+});
+
+

@@ -143,6 +143,20 @@ describe("QueryBuilder", () => {
       ).toEqual("description LIKE '%important%'");
     });
 
+    it("should convert IN and NOT IN operators to CQL", () => {
+      expect(
+        new QueryBuilder()
+          .filter((op) => op.in("investigation_type", ["CPT", "OTHER"]))
+          .toCQL(),
+      ).toEqual("investigation_type IN ('CPT', 'OTHER')");
+
+      expect(
+        new QueryBuilder()
+          .filter((op) => op.notIn("status", ["DELETED", "ARCHIVED"]))
+          .toCQL(),
+      ).toEqual("status NOT IN ('DELETED', 'ARCHIVED')");
+    });
+
     it("should convert logical operators to CQL", () => {
       expect(
         new QueryBuilder()

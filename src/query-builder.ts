@@ -5,11 +5,13 @@ import {
   eq,
   gt,
   gte,
+  in as inOp,
   isNotNull,
   isNull,
   lt,
   lte,
   ne,
+  notIn,
 } from "./operators/comparison-operators";
 import { and, not, or } from "./operators/logical-operators";
 import {
@@ -114,6 +116,8 @@ export class QueryBuilder<T extends Record<string, unknown>>
         gt,
         gte,
         between,
+        in: inOp,
+        notIn,
         contains,
         and,
         or,

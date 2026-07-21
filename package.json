@@ -2,24 +2,26 @@
   "name": "dyno-cql",
   "version": "1.2.3",
   "description": "A TypeScript library for building CQL queries",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/index.mjs",
+  "types": "dist/index.d.mts",
   "files": [
     "dist"
   ],
+  "type": "module",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "require": "./dist/index.js",
-      "import": "./dist/index.js"
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
     }
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsdown",
     "test": "vitest run",
     "test:watch": "vitest",
     "check-ts": "tsc",
     "prepublishOnly": "npm run build",
+    "format": "biome check --write",
     "lint": "biome lint ./src"
   },
   "keywords": [
@@ -31,19 +33,19 @@
   "author": "maunderscott@gmail.com",
   "license": "MIT",
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
-    "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/git": "^10.0.1",
-    "semantic-release": "24.2.3",
-    "tsup": "^8.4.0",
-    "typescript": "^5.0.0",
-    "vitest": "^0.34.0"
+    "@biomejs/biome": "2.5.4",
+    "@semantic-release/changelog": "6.0.3",
+    "@semantic-release/git": "10.0.1",
+    "semantic-release": "25.0.8",
+    "tsdown": "0.22.12",
+    "typescript": "7.0.2",
+    "vitest": "4.1.10"
   },
   "dependencies": {
-    "@types/geojson": "^7946.0.16",
-    "jsts": "^2.12.1"
+    "@types/geojson": "7946.0.16",
+    "jsts": "2.12.1"
   },
-  "packageManager": "pnpm@10.5.2",
+  "packageManager": "pnpm@11.15.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Kysumi/dyno-cql.git"

@@ -7,12 +7,12 @@ Build type-safe OGC Common Query Language (CQL) filter expressions with a fluent
 
 ## Why Dyno CQL?
 
-Working with geospatial and temporal data shouldn't mean wrestling with raw CQL strings. Dyno CQL gives you:
+Building complex CQL queries by concatenating strings is a headache. Dyno CQL provides a better way to generate CQL filters:
 
-- **Full TypeScript support** - Catch errors at compile time, not runtime
-- **Fluent chaining** - Build complex filters that read like sentences
-- **Zero string concatenation** - No more manual escaping or formatting
-- **OGC CQL2 compliant** - Works with modern geospatial APIs
+- **Type safety:** Catch typos and invalid types at compile time.
+- **Fluent builder:** Chain conditions together without worrying about brackets or operator precedence.
+- **Automatic escaping:** Values are safely formatted and escaped.
+- **Standards compliant:** Outputs valid OGC CQL2 ready for your geospatial APIs.
 
 ## Installation
 
@@ -105,8 +105,8 @@ String matching for search functionality.
 ```typescript
 import { like, contains } from 'dyno-cql';
 
-// Prefix matching
-like("name", "A")                    // → name LIKE 'A%'
+// Wildcard matching
+like("name", "A%")                   // → name LIKE 'A%'
 
 // Substring search
 contains("description", "important")  // → description LIKE '%important%'
@@ -157,7 +157,7 @@ import {
 // Point geometry
 const point = { type: "Point", coordinates: [0, 0] };
 intersects("geometry", point)
-// → INTERSECTS(geometry, POINT(0 0))
+// → INTERSECTS(geometry, POINT (0 0))
 
 // Polygon geometry
 const polygon = {
@@ -165,7 +165,7 @@ const polygon = {
   coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]
 };
 within("geometry", polygon)
-// → WITHIN(geometry, POLYGON((0 0, 1 0, 1 1, 0 1, 0 0)))
+// → WITHIN(geometry, POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0)))
 
 // Line geometry
 const line = {
@@ -173,7 +173,7 @@ const line = {
   coordinates: [[0, 0], [1, 1]]
 };
 crosses("geometry", line)
-// → CROSSES(geometry, LINESTRING(0 0, 1 1))
+// → CROSSES(geometry, LINESTRING (0 0, 1 1))
 ```
 
 ### Available spatial operators
@@ -367,7 +367,7 @@ fetch(`/api/products?filter=${query}`);
 - `isNotNull(attr)` - Is not null
 
 ### Text Operators
-- `like(attr, value)` - Prefix match (value%)
+- `like(attr, value)` - Match a caller-supplied wildcard pattern
 - `contains(attr, value)` - Substring match (%value%)
 
 ### Logical Operators

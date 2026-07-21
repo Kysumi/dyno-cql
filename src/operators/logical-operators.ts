@@ -10,20 +10,20 @@ import type { Condition } from "./base-types";
  * ) // status = "ACTIVE" AND age > 18
  * @see {@link https://docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Logical Operators}
  */
-export const and = (...conditions: Condition[]): Condition => ({
-  type: "and",
-  conditions,
-  toCQL: (ctx) => {
-    if (!conditions || conditions.length === 0) {
-      throw new InvalidConditionError(
-        "and",
-        { type: "and", conditions },
-        "conditions (non-empty array)",
-      );
-    }
-    return `(${conditions.map((c) => c.toCQL(ctx)).join(" AND ")})`;
-  },
-});
+export const and = (...conditions: Condition[]): Condition => {
+  if (!conditions || conditions.length === 0) {
+    throw new InvalidConditionError(
+      "and",
+      { type: "and", conditions },
+      "conditions (non-empty array)",
+    );
+  }
+  return {
+    type: "and",
+    conditions,
+    toCQL: (ctx) => `(${conditions.map((c) => c.toCQL(ctx)).join(" AND ")})`,
+  };
+};
 
 /**
  * Combines multiple conditions with OR operator
@@ -34,20 +34,20 @@ export const and = (...conditions: Condition[]): Condition => ({
  * ) // status = "PENDING" OR status = "PROCESSING"
  * @see {@link https://docs.ogc.org/is/21-065r1/21-065r1.html OGC CQL - Logical Operators}
  */
-export const or = (...conditions: Condition[]): Condition => ({
-  type: "or",
-  conditions,
-  toCQL: (ctx) => {
-    if (!conditions || conditions.length === 0) {
-      throw new InvalidConditionError(
-        "or",
-        { type: "or", conditions },
-        "conditions (non-empty array)",
-      );
-    }
-    return `(${conditions.map((c) => c.toCQL(ctx)).join(" OR ")})`;
-  },
-});
+export const or = (...conditions: Condition[]): Condition => {
+  if (!conditions || conditions.length === 0) {
+    throw new InvalidConditionError(
+      "or",
+      { type: "or", conditions },
+      "conditions (non-empty array)",
+    );
+  }
+  return {
+    type: "or",
+    conditions,
+    toCQL: (ctx) => `(${conditions.map((c) => c.toCQL(ctx)).join(" OR ")})`,
+  };
+};
 
 /**
  * Negates a condition
@@ -55,13 +55,13 @@ export const or = (...conditions: Condition[]): Condition => ({
  * not(eq("status", "DELETED")) // NOT status = "DELETED"
  * @see {@link https://docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Logical Operators}
  */
-export const not = (condition: Condition): Condition => ({
-  type: "not",
-  condition,
-  toCQL: (ctx) => {
-    if (!condition) {
-      throw new InvalidConditionError("not", { type: "not" }, "condition");
-    }
-    return `NOT (${condition.toCQL(ctx)})`;
-  },
-});
+export const not = (condition: Condition): Condition => {
+  if (!condition) {
+    throw new InvalidConditionError("not", { type: "not" }, "condition");
+  }
+  return {
+    type: "not",
+    condition,
+    toCQL: (ctx) => `NOT (${condition.toCQL(ctx)})`,
+  };
+};

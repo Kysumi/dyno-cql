@@ -1,6 +1,29 @@
 import type { Geometry } from "geojson";
 import { InvalidConditionError } from "../errors";
-import type { Condition } from "./base-types";
+import type { Condition, SpatialCondition } from "./base-types";
+
+function createSpatialOperator(type: SpatialCondition["type"], opName: string) {
+  return (attr: string, geometry: Geometry): Condition => {
+    const errName =
+      type === "eq"
+        ? "spatialEquals"
+        : type === "contains"
+          ? "contains (spatial)"
+          : type;
+    if (!attr) {
+      throw new InvalidConditionError(errName, { type, attr }, "attr");
+    }
+    if (!geometry) {
+      throw new InvalidConditionError(errName, { type, geometry }, "geometry");
+    }
+    return {
+      type,
+      attr,
+      geometry,
+      toCQL: (ctx) => ctx.formatSpatialQuery(opName, attr, geometry),
+    };
+  };
+}
 
 /**
  * Creates a spatial INTERSECTS condition
@@ -16,28 +39,7 @@ import type { Condition } from "./base-types";
  *  - INTERSECTS(geometry, MULTIPOLYGON(((0 0, 1 0, 1 1, 0 1, 0 0)), ((2 2, 3 2, 3 3, 2 3, 2 2))))
  * @see {@link https:docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Spatial Operators}
  */
-export const intersects = (attr: string, geometry: Geometry): Condition => ({
-  type: "intersects",
-  attr,
-  geometry,
-  toCQL: (ctx) => {
-    if (!attr) {
-      throw new InvalidConditionError(
-        "intersects",
-        { type: "intersects", attr },
-        "attr",
-      );
-    }
-    if (!geometry) {
-      throw new InvalidConditionError(
-        "intersects",
-        { type: "intersects", geometry },
-        "geometry",
-      );
-    }
-    return ctx.formatSpatialQuery("INTERSECTS", attr, geometry);
-  },
-});
+export const intersects = createSpatialOperator("intersects", "INTERSECTS");
 
 /**
  * Creates a spatial DISJOINT condition
@@ -53,28 +55,7 @@ export const intersects = (attr: string, geometry: Geometry): Condition => ({
  *  - DISJOINT(geometry, MULTIPOLYGON(((0 0, 1 0, 1 1, 0 1, 0 0)), ((2 2, 3 2, 3 3, 2 3, 2 2))))
  * @see {@link https:docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Spatial Operators}
  */
-export const disjoint = (attr: string, geometry: Geometry): Condition => ({
-  type: "disjoint",
-  attr,
-  geometry,
-  toCQL: (ctx) => {
-    if (!attr) {
-      throw new InvalidConditionError(
-        "disjoint",
-        { type: "disjoint", attr },
-        "attr",
-      );
-    }
-    if (!geometry) {
-      throw new InvalidConditionError(
-        "disjoint",
-        { type: "disjoint", geometry },
-        "geometry",
-      );
-    }
-    return ctx.formatSpatialQuery("DISJOINT", attr, geometry);
-  },
-});
+export const disjoint = createSpatialOperator("disjoint", "DISJOINT");
 
 /**
  * Creates a spatial CONTAINS condition
@@ -90,31 +71,7 @@ export const disjoint = (attr: string, geometry: Geometry): Condition => ({
  *  - CONTAINS(geometry, MULTIPOLYGON(((0 0, 1 0, 1 1, 0 1, 0 0)), ((2 2, 3 2, 3 3, 2 3, 2 2))))
  * @see {@link https:docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Spatial Operators}
  */
-export const spatialContains = (
-  attr: string,
-  geometry: Geometry,
-): Condition => ({
-  type: "contains",
-  attr,
-  geometry,
-  toCQL: (ctx) => {
-    if (!attr) {
-      throw new InvalidConditionError(
-        "contains (spatial)",
-        { type: "contains", attr },
-        "attr",
-      );
-    }
-    if (!geometry) {
-      throw new InvalidConditionError(
-        "contains (spatial)",
-        { type: "contains", geometry },
-        "geometry",
-      );
-    }
-    return ctx.formatSpatialQuery("CONTAINS", attr, geometry);
-  },
-});
+export const spatialContains = createSpatialOperator("contains", "CONTAINS");
 
 /**
  * Creates a spatial WITHIN condition
@@ -130,28 +87,7 @@ export const spatialContains = (
  *  - WITHIN(geometry, MULTIPOLYGON(((0 0, 1 0, 1 1, 0 1, 0 0)), ((2 2, 3 2, 3 3, 2 3, 2 2))))
  * @see {@link https:docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Spatial Operators}
  */
-export const within = (attr: string, geometry: Geometry): Condition => ({
-  type: "within",
-  attr,
-  geometry,
-  toCQL: (ctx) => {
-    if (!attr) {
-      throw new InvalidConditionError(
-        "within",
-        { type: "within", attr },
-        "attr",
-      );
-    }
-    if (!geometry) {
-      throw new InvalidConditionError(
-        "within",
-        { type: "within", geometry },
-        "geometry",
-      );
-    }
-    return ctx.formatSpatialQuery("WITHIN", attr, geometry);
-  },
-});
+export const within = createSpatialOperator("within", "WITHIN");
 
 /**
  * Creates a spatial TOUCHES condition
@@ -167,28 +103,7 @@ export const within = (attr: string, geometry: Geometry): Condition => ({
  *  - TOUCHES(geometry, MULTIPOLYGON(((0 0, 1 0, 1 1, 0 1, 0 0)), ((2 2, 3 2, 3 3, 2 3, 2 2))))
  * @see {@link https:docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Spatial Operators}
  */
-export const touches = (attr: string, geometry: Geometry): Condition => ({
-  type: "touches",
-  attr,
-  geometry,
-  toCQL: (ctx) => {
-    if (!attr) {
-      throw new InvalidConditionError(
-        "touches",
-        { type: "touches", attr },
-        "attr",
-      );
-    }
-    if (!geometry) {
-      throw new InvalidConditionError(
-        "touches",
-        { type: "touches", geometry },
-        "geometry",
-      );
-    }
-    return ctx.formatSpatialQuery("TOUCHES", attr, geometry);
-  },
-});
+export const touches = createSpatialOperator("touches", "TOUCHES");
 
 /**
  * Creates a spatial OVERLAPS condition
@@ -204,28 +119,7 @@ export const touches = (attr: string, geometry: Geometry): Condition => ({
  *  - OVERLAPS(geometry, MULTIPOLYGON(((0 0, 1 0, 1 1, 0 1, 0 0)), ((2 2, 3 2, 3 3, 2 3, 2 2))))
  * @see {@link https:docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Spatial Operators}
  */
-export const overlaps = (attr: string, geometry: Geometry): Condition => ({
-  type: "overlaps",
-  attr,
-  geometry,
-  toCQL: (ctx) => {
-    if (!attr) {
-      throw new InvalidConditionError(
-        "overlaps",
-        { type: "overlaps", attr },
-        "attr",
-      );
-    }
-    if (!geometry) {
-      throw new InvalidConditionError(
-        "overlaps",
-        { type: "overlaps", geometry },
-        "geometry",
-      );
-    }
-    return ctx.formatSpatialQuery("OVERLAPS", attr, geometry);
-  },
-});
+export const overlaps = createSpatialOperator("overlaps", "OVERLAPS");
 
 /**
  * Creates a spatial CROSSES condition
@@ -241,28 +135,7 @@ export const overlaps = (attr: string, geometry: Geometry): Condition => ({
  *  - CROSSES(geometry, MULTIPOLYGON(((0 0, 1 0, 1 1, 0 1, 0 0)), ((2 2, 3 2, 3 3, 2 3, 2 2))))
  * @see {@link https:docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Spatial Operators}
  */
-export const crosses = (attr: string, geometry: Geometry): Condition => ({
-  type: "crosses",
-  attr,
-  geometry,
-  toCQL: (ctx) => {
-    if (!attr) {
-      throw new InvalidConditionError(
-        "crosses",
-        { type: "crosses", attr },
-        "attr",
-      );
-    }
-    if (!geometry) {
-      throw new InvalidConditionError(
-        "crosses",
-        { type: "crosses", geometry },
-        "geometry",
-      );
-    }
-    return ctx.formatSpatialQuery("CROSSES", attr, geometry);
-  },
-});
+export const crosses = createSpatialOperator("crosses", "CROSSES");
 
 /**
  * Creates a spatial EQUALS condition
@@ -278,25 +151,4 @@ export const crosses = (attr: string, geometry: Geometry): Condition => ({
  *  - EQUALS(geometry, {"type":"MultiPolygon","coordinates":[[[[0,0],[1,0],[1,1],[0,1],[0,0]]],[[[2,2],[3,2],[3,3],[2,3],[2,2]]]]})
  * @see {@link https:docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Spatial Operators}
  */
-export const spatialEquals = (attr: string, geometry: Geometry): Condition => ({
-  type: "eq",
-  attr,
-  geometry,
-  toCQL: (ctx) => {
-    if (!attr) {
-      throw new InvalidConditionError(
-        "spatialEquals",
-        { type: "eq", attr },
-        "attr",
-      );
-    }
-    if (!geometry) {
-      throw new InvalidConditionError(
-        "spatialEquals",
-        { type: "eq", geometry },
-        "geometry",
-      );
-    }
-    return ctx.formatSpatialQuery("EQUALS", attr, geometry);
-  },
-});
+export const spatialEquals = createSpatialOperator("eq", "EQUALS");

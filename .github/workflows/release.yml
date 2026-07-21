@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - alpha
+      - next
 
 jobs:
   release:
@@ -14,24 +14,24 @@ jobs:
       contents: write         # to be able to publish a github release
       issues: write           # to be able to comment on released issues
       pull-requests: write    #comment on pull requests
+      id-token: write         # to publish to npm with OIDC
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: 22
-          cache: 'pnpm'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "lts/*"
+          cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Build
         run: pnpm build
@@ -39,6 +39,4 @@ jobs:
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npx semantic-release@24.2.3
+        run: pnpm exec semantic-release

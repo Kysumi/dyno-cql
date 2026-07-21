@@ -48,15 +48,16 @@ type PathImpl<K extends string | number, V, TraversedTypes> = V extends
 
 type ArrayKey = number;
 
-type PathInternal<T, TraversedTypes = T> = T extends ReadonlyArray<infer V>
-  ? IsTuple<T> extends true
-    ? {
-        [K in TupleKeys<T>]-?: PathImpl<K & string, T[K], TraversedTypes>;
-      }[TupleKeys<T>]
-    : PathImpl<ArrayKey, V, TraversedTypes>
-  : {
-      [K in keyof T]-?: PathImpl<K & string, T[K], TraversedTypes>;
-    }[keyof T];
+type PathInternal<T, TraversedTypes = T> =
+  T extends ReadonlyArray<infer V>
+    ? IsTuple<T> extends true
+      ? {
+          [K in TupleKeys<T>]-?: PathImpl<K & string, T[K], TraversedTypes>;
+        }[TupleKeys<T>]
+      : PathImpl<ArrayKey, V, TraversedTypes>
+    : {
+        [K in keyof T]-?: PathImpl<K & string, T[K], TraversedTypes>;
+      }[keyof T];
 
 // biome-ignore lint/suspicious/noExplicitAny: RHF
 export type Path<T> = T extends any ? PathInternal<T> : never;
@@ -67,7 +68,7 @@ export type PathType<
   K extends keyof any,
 > = K extends `${infer Key}.${infer Rest}`
   ? Key extends keyof T
-    ? // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    ? // biome-ignore lint/suspicious/noExplicitAny: TypeScript requirement for generic keyof any
       Rest extends keyof any
       ? PathType<T[Key], Rest>
       : never

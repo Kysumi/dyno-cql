@@ -158,7 +158,7 @@ export const isNotNull = createNullComparison("ne", "IS NOT NULL");
  */
 const inCondition = createInComparison("in", "IN");
 
-export { inCondition as in };
+export { inCondition as isIn };
 
 /**
  * Creates a NOT IN condition checking if an attribute value does not match any value in a list
@@ -166,4 +166,4 @@ export { inCondition as in };
  * notIn("status", ["DELETED", "ARCHIVED"]) // status NOT IN ('DELETED', 'ARCHIVED')
  * @see {@link https://docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Comparison Operators}
  */
-export const notIn = createInComparison("notIn", "NOT IN");
+export const isNotIn = createInComparison("notIn", "NOT IN");

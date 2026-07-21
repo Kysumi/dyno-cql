@@ -4,12 +4,12 @@ import WKTWriter from "jsts/org/locationtech/jts/io/WKTWriter.js";
 import { SpatialOperationError } from "./errors";
 import type { CQLContext } from "./operators/base-types";
 import type { TemporalValue } from "./operators/temporal-operators";
+import GeometryFactory from "jsts/org/locationtech/jts/geom/GeometryFactory";
 
 // Create instances of JSTS readers and writers
-// @ts-expect-error
-const geoJsonReader = new GeoJSONReader();
-// @ts-expect-error
-const wktWriter = new WKTWriter();
+const geometryFactory = new GeometryFactory();
+const geoJsonReader = new GeoJSONReader(geometryFactory);
+const wktWriter = new WKTWriter(geometryFactory);
 
 /**
  * Formats a value for use in CQL expressions.

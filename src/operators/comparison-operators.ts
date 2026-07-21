@@ -1,5 +1,82 @@
 import { InvalidConditionError } from "../errors";
-import type { Condition } from "./base-types";
+import type { ComparisonCondition, Condition } from "./base-types";
+
+function createBinaryComparison(type: ComparisonCondition["type"], op: string) {
+  return (attr: string, value: unknown): Condition => {
+    if (!attr)
+      throw new InvalidConditionError(type, { type, attr, value }, "attr");
+    return {
+      type,
+      attr,
+      value,
+      toCQL: (ctx) => `${attr} ${op} ${ctx.formatValue(value)}`,
+    };
+  };
+}
+
+function createNullComparison(type: ComparisonCondition["type"], op: string) {
+  return (attr: string): Condition => {
+    if (!attr)
+      throw new InvalidConditionError(
+        type,
+        { type, attr, value: null },
+        "attr",
+      );
+    return {
+      type,
+      attr,
+      value: null,
+      toCQL: () => `${attr} ${op}`,
+    };
+  };
+}
+
+function createInComparison(type: ComparisonCondition["type"], op: string) {
+  return (attr: string, values: unknown[]): Condition => {
+    if (!attr)
+      throw new InvalidConditionError(
+        type,
+        { type, attr, value: values },
+        "attr",
+      );
+    if (!values || !Array.isArray(values) || values.length === 0) {
+      throw new InvalidConditionError(
+        type,
+        { type, attr, value: values },
+        "values",
+      );
+    }
+    return {
+      type,
+      attr,
+      value: values,
+      toCQL: (ctx) => {
+        const formattedValues = values
+          .map((v) => ctx.formatValue(v))
+          .join(", ");
+        return `${attr} ${op} (${formattedValues})`;
+      },
+    };
+  };
+}
+
+function createBetweenComparison() {
+  return (attr: string, lower: unknown, upper: unknown): Condition => {
+    if (!attr)
+      throw new InvalidConditionError(
+        "between",
+        { type: "between", attr },
+        "attr",
+      );
+    return {
+      type: "between",
+      attr,
+      value: [lower, upper],
+      toCQL: (ctx) =>
+        `${attr} BETWEEN ${ctx.formatValue(lower)} AND ${ctx.formatValue(upper)}`,
+    };
+  };
+}
 
 /**
  * Creates an equals (=) condition
@@ -7,21 +84,7 @@ import type { Condition } from "./base-types";
  * eq("status", "ACTIVE") // status = "ACTIVE"
  * @see {@link https://docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Comparison Operators}
  */
-export const eq = (attr: string, value: unknown): Condition => ({
-  type: "eq",
-  attr,
-  value,
-  toCQL: (ctx) => {
-    if (!attr) {
-      throw new InvalidConditionError(
-        "eq",
-        { type: "eq", attr, value },
-        "attr",
-      );
-    }
-    return `${attr} = ${ctx.formatValue(value)}`;
-  },
-});
+export const eq = createBinaryComparison("eq", "=");
 
 /**
  * Creates a not equals (!=) condition
@@ -29,21 +92,7 @@ export const eq = (attr: string, value: unknown): Condition => ({
  * ne("status", "DELETED") // status <> "DELETED"
  * @see {@link https://docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Comparison Operators}
  */
-export const ne = (attr: string, value: unknown): Condition => ({
-  type: "ne",
-  attr,
-  value,
-  toCQL: (ctx) => {
-    if (!attr) {
-      throw new InvalidConditionError(
-        "ne",
-        { type: "ne", attr, value },
-        "attr",
-      );
-    }
-    return `${attr} <> ${ctx.formatValue(value)}`;
-  },
-});
+export const ne = createBinaryComparison("ne", "<>");
 
 /**
  * Creates a less than (<) condition
@@ -51,21 +100,7 @@ export const ne = (attr: string, value: unknown): Condition => ({
  * lt("age", 18) // age < 18
  * @see {@link https://docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Comparison Operators}
  */
-export const lt = (attr: string, value: unknown): Condition => ({
-  type: "lt",
-  attr,
-  value,
-  toCQL: (ctx) => {
-    if (!attr) {
-      throw new InvalidConditionError(
-        "lt",
-        { type: "lt", attr, value },
-        "attr",
-      );
-    }
-    return `${attr} < ${ctx.formatValue(value)}`;
-  },
-});
+export const lt = createBinaryComparison("lt", "<");
 
 /**
  * Creates a less than or equal to (<=) condition
@@ -73,21 +108,7 @@ export const lt = (attr: string, value: unknown): Condition => ({
  * lte("age", 18) // age <= 18
  * @see {@link https://docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Comparison Operators}
  */
-export const lte = (attr: string, value: unknown): Condition => ({
-  type: "lte",
-  attr,
-  value,
-  toCQL: (ctx) => {
-    if (!attr) {
-      throw new InvalidConditionError(
-        "lte",
-        { type: "lte", attr, value },
-        "attr",
-      );
-    }
-    return `${attr} <= ${ctx.formatValue(value)}`;
-  },
-});
+export const lte = createBinaryComparison("lte", "<=");
 
 /**
  * Creates a greater than (>) condition
@@ -95,21 +116,7 @@ export const lte = (attr: string, value: unknown): Condition => ({
  * gt("price", 100) // price > 100
  * @see {@link https://docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Comparison Operators}
  */
-export const gt = (attr: string, value: unknown): Condition => ({
-  type: "gt",
-  attr,
-  value,
-  toCQL: (ctx) => {
-    if (!attr) {
-      throw new InvalidConditionError(
-        "gt",
-        { type: "gt", attr, value },
-        "attr",
-      );
-    }
-    return `${attr} > ${ctx.formatValue(value)}`;
-  },
-});
+export const gt = createBinaryComparison("gt", ">");
 
 /**
  * Creates a greater than or equal to (>=) condition
@@ -117,21 +124,7 @@ export const gt = (attr: string, value: unknown): Condition => ({
  * gte("price", 100) // price >= 100
  * @see {@link https://docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Comparison Operators}
  */
-export const gte = (attr: string, value: unknown): Condition => ({
-  type: "gte",
-  attr,
-  value,
-  toCQL: (ctx) => {
-    if (!attr) {
-      throw new InvalidConditionError(
-        "gte",
-        { type: "gte", attr, value },
-        "attr",
-      );
-    }
-    return `${attr} >= ${ctx.formatValue(value)}`;
-  },
-});
+export const gte = createBinaryComparison("gte", ">=");
 
 /**
  * Creates a between condition that checks if a value is within a range (inclusive)
@@ -139,25 +132,7 @@ export const gte = (attr: string, value: unknown): Condition => ({
  * between("age", 18, 65) // age BETWEEN 18 AND 65
  * @see {@link https://docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Comparison Operators}
  */
-export const between = (
-  attr: string,
-  lower: unknown,
-  upper: unknown,
-): Condition => ({
-  type: "between",
-  attr,
-  value: [lower, upper],
-  toCQL: (ctx) => {
-    if (!attr) {
-      throw new InvalidConditionError(
-        "between",
-        { type: "between", attr },
-        "attr",
-      );
-    }
-    return `${attr} BETWEEN ${ctx.formatValue(lower)} AND ${ctx.formatValue(upper)}`;
-  },
-});
+export const between = createBetweenComparison();
 
 /**
  * Creates a condition that checks if a property is NULL
@@ -165,21 +140,7 @@ export const between = (
  * isNull("deletedAt") // deletedAt IS NULL
  * @see {@link https://docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Comparison Operators}
  */
-export const isNull = (attr: string): Condition => ({
-  type: "eq",
-  attr,
-  value: null,
-  toCQL: (ctx) => {
-    if (!attr) {
-      throw new InvalidConditionError(
-        "isNull",
-        { type: "eq", attr, value: null },
-        "attr",
-      );
-    }
-    return `${attr} IS NULL`;
-  },
-});
+export const isNull = createNullComparison("eq", "IS NULL");
 
 /**
  * Creates a condition that checks if a property is NOT NULL
@@ -187,21 +148,7 @@ export const isNull = (attr: string): Condition => ({
  * isNotNull("email") // email IS NOT NULL
  * @see {@link https://docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Comparison Operators}
  */
-export const isNotNull = (attr: string): Condition => ({
-  type: "ne",
-  attr,
-  value: null,
-  toCQL: (ctx) => {
-    if (!attr) {
-      throw new InvalidConditionError(
-        "isNotNull",
-        { type: "ne", attr, value: null },
-        "attr",
-      );
-    }
-    return `${attr} IS NOT NULL`;
-  },
-});
+export const isNotNull = createNullComparison("ne", "IS NOT NULL");
 
 /**
  * Creates an IN condition checking if an attribute value matches any value in a list
@@ -209,30 +156,7 @@ export const isNotNull = (attr: string): Condition => ({
  * in_("investigation_type", ["CPT", "OTHER"]) // investigation_type IN ('CPT', 'OTHER')
  * @see {@link https://docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Comparison Operators}
  */
-const inCondition = (attr: string, values: unknown[]): Condition => ({
-  type: "in",
-  attr,
-  value: values,
-  toCQL: (ctx) => {
-    if (!attr) {
-      throw new InvalidConditionError(
-        "in",
-        { type: "in", attr, value: values },
-        "attr",
-      );
-    }
-    if (!values || !Array.isArray(values) || values.length === 0) {
-      throw new InvalidConditionError(
-        "in",
-        { type: "in", attr, value: values },
-        "values",
-      );
-    }
-    const formattedValues = values.map((v) => ctx.formatValue(v)).join(", ");
-    return `${attr} IN (${formattedValues})`;
-  },
-});
-
+const inCondition = createInComparison("in", "IN");
 export { inCondition as in };
 
 /**
@@ -241,28 +165,4 @@ export { inCondition as in };
  * notIn("status", ["DELETED", "ARCHIVED"]) // status NOT IN ('DELETED', 'ARCHIVED')
  * @see {@link https://docs.ogc.org/is/21-065r2/21-065r2.html OGC CQL - Comparison Operators}
  */
-export const notIn = (attr: string, values: unknown[]): Condition => ({
-  type: "notIn",
-  attr,
-  value: values,
-  toCQL: (ctx) => {
-    if (!attr) {
-      throw new InvalidConditionError(
-        "notIn",
-        { type: "notIn", attr, value: values },
-        "attr",
-      );
-    }
-    if (!values || !Array.isArray(values) || values.length === 0) {
-      throw new InvalidConditionError(
-        "notIn",
-        { type: "notIn", attr, value: values },
-        "values",
-      );
-    }
-    const formattedValues = values.map((v) => ctx.formatValue(v)).join(", ");
-    return `${attr} NOT IN (${formattedValues})`;
-  },
-});
-
-
+export const notIn = createInComparison("notIn", "NOT IN");

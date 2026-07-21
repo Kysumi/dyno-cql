@@ -105,8 +105,8 @@ String matching for search functionality.
 ```typescript
 import { like, contains } from 'dyno-cql';
 
-// Prefix matching
-like("name", "A")                    // → name LIKE 'A%'
+// Wildcard matching
+like("name", "A%")                   // → name LIKE 'A%'
 
 // Substring search
 contains("description", "important")  // → description LIKE '%important%'
@@ -157,7 +157,7 @@ import {
 // Point geometry
 const point = { type: "Point", coordinates: [0, 0] };
 intersects("geometry", point)
-// → INTERSECTS(geometry, POINT(0 0))
+// → INTERSECTS(geometry, POINT (0 0))
 
 // Polygon geometry
 const polygon = {
@@ -165,7 +165,7 @@ const polygon = {
   coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]
 };
 within("geometry", polygon)
-// → WITHIN(geometry, POLYGON((0 0, 1 0, 1 1, 0 1, 0 0)))
+// → WITHIN(geometry, POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0)))
 
 // Line geometry
 const line = {
@@ -173,7 +173,7 @@ const line = {
   coordinates: [[0, 0], [1, 1]]
 };
 crosses("geometry", line)
-// → CROSSES(geometry, LINESTRING(0 0, 1 1))
+// → CROSSES(geometry, LINESTRING (0 0, 1 1))
 ```
 
 ### Available spatial operators
@@ -367,7 +367,7 @@ fetch(`/api/products?filter=${query}`);
 - `isNotNull(attr)` - Is not null
 
 ### Text Operators
-- `like(attr, value)` - Prefix match (value%)
+- `like(attr, value)` - Match a caller-supplied wildcard pattern
 - `contains(attr, value)` - Substring match (%value%)
 
 ### Logical Operators

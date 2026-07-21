@@ -93,7 +93,9 @@ describe("Comparison Operators", () => {
   describe("in operator", () => {
     it("should generate correct CQL for string list", () => {
       const condition = inOp("investigation_type", ["CPT", "OTHER"]);
-      expect(condition.toCQL(ctx)).toBe("investigation_type IN ('CPT', 'OTHER')");
+      expect(condition.toCQL(ctx)).toBe(
+        "investigation_type IN ('CPT', 'OTHER')",
+      );
     });
 
     it("should generate correct CQL for numeric list", () => {
@@ -102,15 +104,13 @@ describe("Comparison Operators", () => {
     });
 
     it("should throw InvalidConditionError when attr is empty", () => {
-      const condition = inOp("", ["CPT"]);
-      expect(() => condition.toCQL(ctx)).toThrowError(
+      expect(() => inOp("", ["CPT"])).toThrowError(
         "Condition of type 'in' is missing required attribute: attr.",
       );
     });
 
     it("should throw InvalidConditionError when values list is empty or not an array", () => {
-      const condition = inOp("type", []);
-      expect(() => condition.toCQL(ctx)).toThrowError(
+      expect(() => inOp("type", [])).toThrowError(
         "Condition of type 'in' is missing required attribute: values.",
       );
     });
@@ -119,7 +119,9 @@ describe("Comparison Operators", () => {
   describe("notIn operator", () => {
     it("should generate correct CQL for string list", () => {
       const condition = notIn("status", ["DELETED", "ARCHIVED"]);
-      expect(condition.toCQL(ctx)).toBe("status NOT IN ('DELETED', 'ARCHIVED')");
+      expect(condition.toCQL(ctx)).toBe(
+        "status NOT IN ('DELETED', 'ARCHIVED')",
+      );
     });
 
     it("should generate correct CQL for numeric list", () => {
@@ -128,18 +130,15 @@ describe("Comparison Operators", () => {
     });
 
     it("should throw InvalidConditionError when attr is empty", () => {
-      const condition = notIn("", ["DELETED"]);
-      expect(() => condition.toCQL(ctx)).toThrowError(
+      expect(() => notIn("", ["DELETED"])).toThrowError(
         "Condition of type 'notIn' is missing required attribute: attr.",
       );
     });
 
     it("should throw InvalidConditionError when values list is empty", () => {
-      const condition = notIn("status", []);
-      expect(() => condition.toCQL(ctx)).toThrowError(
+      expect(() => notIn("status", [])).toThrowError(
         "Condition of type 'notIn' is missing required attribute: values.",
       );
     });
   });
 });
-

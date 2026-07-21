@@ -1,16 +1,16 @@
-import { describe, it, expect } from "vitest";
-import {
-  intersects,
-  disjoint,
-  spatialContains,
-  within,
-  touches,
-  overlaps,
-  crosses,
-  spatialEquals,
-} from "../spatial-operators";
 import type { Geometry } from "geojson";
+import { describe, expect, it } from "vitest";
 import { createCQLContext } from "../../cql-context";
+import {
+  crosses,
+  disjoint,
+  intersects,
+  overlaps,
+  spatialContains,
+  spatialEquals,
+  touches,
+  within,
+} from "../spatial-operators";
 
 describe("Spatial Operators", () => {
   const ctx = createCQLContext();

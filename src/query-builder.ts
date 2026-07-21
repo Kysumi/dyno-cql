@@ -15,9 +15,13 @@ import {
 } from "./operators/comparison-operators";
 import { and, not, or } from "./operators/logical-operators";
 import {
+  crosses,
   disjoint,
   intersects,
+  overlaps,
   spatialContains,
+  spatialEquals,
+  touches,
   within,
 } from "./operators/spatial-operators";
 import {
@@ -38,6 +42,49 @@ import {
   toverlaps,
 } from "./operators/temporal-operators";
 import { contains, like } from "./operators/text-operators";
+
+const BASE_CONDITION_OPERATOR = {
+  eq,
+  ne,
+  lt,
+  lte,
+  gt,
+  gte,
+  between,
+  in: inOp,
+  notIn,
+  contains,
+  and,
+  or,
+  not,
+  intersects,
+  disjoint,
+  isNotNull,
+  isNull,
+  like,
+  spatialContains,
+  within,
+  touches,
+  overlaps,
+  crosses,
+  spatialEquals,
+  // Temporal operators
+  anyinteracts,
+  after,
+  before,
+  begins,
+  begunby,
+  tcontains,
+  during,
+  endedby,
+  ends,
+  tequals,
+  meets,
+  metby,
+  toverlaps,
+  overlappedby,
+  tintersects,
+};
 
 /**
  * Interface for QueryBuilder implementation
@@ -108,44 +155,8 @@ export class QueryBuilder<T extends Record<string, unknown>>
     condition: Condition | ((op: ConditionOperator<T>) => Condition),
   ): QueryBuilder<T> {
     if (typeof condition === "function") {
-      const conditionOperator: ConditionOperator<T> = {
-        eq,
-        ne,
-        lt,
-        lte,
-        gt,
-        gte,
-        between,
-        in: inOp,
-        notIn,
-        contains,
-        and,
-        or,
-        not,
-        intersects,
-        disjoint,
-        isNotNull,
-        isNull,
-        like,
-        spatialContains,
-        within,
-        // Temporal operators
-        anyinteracts,
-        after,
-        before,
-        begins,
-        begunby,
-        tcontains,
-        during,
-        endedby,
-        ends,
-        tequals,
-        meets,
-        metby,
-        toverlaps,
-        overlappedby,
-        tintersects,
-      };
+      const conditionOperator =
+        BASE_CONDITION_OPERATOR as unknown as ConditionOperator<T>;
       this.options.filter = condition(conditionOperator);
     } else {
       this.options.filter = condition;

@@ -55,31 +55,50 @@ export interface CQLContext {
   ) => string;
 }
 
+export interface BaseCondition {
+  toCQL: (context: CQLContext) => string;
+}
+
+export interface ComparisonCondition extends BaseCondition {
+  type: ComparisonOperator | "eq" | "ne";
+  attr: string;
+  value: unknown;
+}
+
+export interface LogicalCondition extends BaseCondition {
+  type: LogicalOperator;
+  conditions?: Condition[];
+  condition?: Condition;
+}
+
+export interface SpatialCondition extends BaseCondition {
+  type: SpatialOperator | "eq";
+  attr: string;
+  geometry: Geometry;
+}
+
+export interface TemporalCondition extends BaseCondition {
+  type: TemporalOperator;
+  attr: string;
+  value: TemporalValue;
+}
+
+export interface TextCondition extends BaseCondition {
+  type: TextOperator;
+  attr: string;
+  value: unknown;
+}
+
 /**
  * Represents an OGC CQL condition expression.
  * Conditions are self-serializing objects that know how to convert themselves to CQL strings.
  */
-export interface Condition {
-  /** The type of condition (comparison, logical, spatial, temporal, or text operator) */
-  type:
-    | ComparisonOperator
-    | LogicalOperator
-    | SpatialOperator
-    | TemporalOperator
-    | TextOperator;
-  /** The attribute name for comparison conditions */
-  attr?: string;
-  /** The value to compare against for comparison conditions */
-  value?: unknown;
-  /** Array of conditions for logical operators (and/or) */
-  conditions?: Condition[];
-  /** Single condition for the 'not' operator */
-  condition?: Condition;
-  /** Geometry for spatial operators */
-  geometry?: Geometry;
-  /** Self-serialization method that converts this condition to a CQL string */
-  toCQL: (context: CQLContext) => string;
-}
+export type Condition =
+  | ComparisonCondition
+  | LogicalCondition
+  | SpatialCondition
+  | TemporalCondition
+  | TextCondition;
 
 /**
  * Type-safe operators for building CQL filter conditions.
@@ -114,6 +133,10 @@ export type ConditionOperator<T extends Record<string, unknown>> = {
     geometry: Geometry,
   ) => Condition;
   within: <K extends Path<T>>(attr: K, geometry: Geometry) => Condition;
+  touches: <K extends Path<T>>(attr: K, geometry: Geometry) => Condition;
+  overlaps: <K extends Path<T>>(attr: K, geometry: Geometry) => Condition;
+  crosses: <K extends Path<T>>(attr: K, geometry: Geometry) => Condition;
+  spatialEquals: <K extends Path<T>>(attr: K, geometry: Geometry) => Condition;
   // Temporal operators
   anyinteracts: <K extends Path<T>>(attr: K, value: TemporalValue) => Condition;
   after: <K extends Path<T>>(attr: K, value: TemporalValue) => Condition;

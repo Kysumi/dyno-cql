@@ -52,7 +52,7 @@ export type TemporalValue =
  */
 
 function createTemporalOperator(type: TemporalOperator, opName: string) {
-  return <T>(attr: string, value: TemporalValue): Condition => {
+  return <_T>(attr: string, value: TemporalValue): Condition => {
     if (!attr) {
       throw new InvalidConditionError(type, { type, attr }, "attr");
     }

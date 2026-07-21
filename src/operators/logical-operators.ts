@@ -1,5 +1,5 @@
 import { InvalidConditionError } from "../errors";
-import type { Condition, LogicalCondition } from "./base-types";
+import type { Condition } from "./base-types";
 
 /**
  * Combines multiple conditions with AND operator

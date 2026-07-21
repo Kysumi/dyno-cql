@@ -68,7 +68,7 @@ export type PathType<
   K extends keyof any,
 > = K extends `${infer Key}.${infer Rest}`
   ? Key extends keyof T
-    ? // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    ? // biome-ignore lint/suspicious/noExplicitAny: TypeScript requirement for generic keyof any
       Rest extends keyof any
       ? PathType<T[Key], Rest>
       : never

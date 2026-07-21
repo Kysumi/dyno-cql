@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/Kysumi/dyno-cql/compare/v1.4.0...v1.5.0) (2026-07-21)
+
+
+### Features
+
+* updated documentation ([cd70c6e](https://github.com/Kysumi/dyno-cql/commit/cd70c6ee5f93bc238e25d55eed7b198b66799028))
+
 # [1.4.0](https://github.com/Kysumi/dyno-cql/compare/v1.3.0...v1.4.0) (2026-07-21)
 
 
